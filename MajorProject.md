@@ -100,4 +100,38 @@
         - Listing.findById(id);
         - res.render("listings/show.ejs");
 
-    - num.toLocalString("en-in") -> to convert the number into indian number system
+    - num.toLocaleString("en-IN") -> to convert the number into indian number system
+
+
+### CREATE (New & Create Route)
+    - GET   ->  /listings/new   -> Open Form
+    - POST  ->  /listings       <- Submit
+
+    - create new.ejs -> for Form for New Listing
+
+    - index.ejs -> add button in the form (PREFER TO USE FORM FOR THE BUTTON)
+        -> method="GET" action="/listing/new"
+    
+    - app.get("/listings/new", (req, res) => {
+        res.render("listings/new")
+    })
+
+
+    -IMP: KEEP THE BELOW ROUTE ABOVE THAN READ ROUTE otherwise it will consider the new as id and shows error
+    - app.post("/listings", async (req, res) => {
+
+        <!-- let {title, description, price, country, etc...} = req.body; -->
+                                    OR 
+        <!-- You can change the name field of the new.ejs form as listing{title} -->
+        let listing = req.body.listing;
+
+        let newListing = new Listing(listing);
+        await newListing.save();
+
+        res.redirect("/listings");
+
+    })
+
+
+### UPDATE (Edit & Update Route)
+    - 

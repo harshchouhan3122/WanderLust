@@ -9,6 +9,8 @@ const PORT = 3000;
 const Listing = require("./models/listing.js");
 const path = require("path");
 
+app.use(express.urlencoded({extended:true}))            // to get the parameters from the query String 
+
 
 
 
@@ -53,19 +55,54 @@ app.get("/", (req, res)=>{
 // })
 
 
+
 // for index.ejs 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 
-// Create Route
+// Create Route (Index Route)
 app.get("/listings", async (req, res) => {
     const allListings = await Listing.find({});
     // console.log(allListings);
-    console.log("Data Imported Successfully from the DB...");
+    console.log("All Listings from the DB...");
     // res.send(allListings);
     res.render("listings/index.ejs", {allListings});
 });
+
+
+// CREATE ROUTE (new and create)  -> Always be above than READ route
+// Open form for this route
+app.get("/listings/new", (req, res) => {
+    res.render("listings/new.ejs");
+
+    console.log("Create new Listing...");
+})
+
+// Add New Listing to DB
+app.post("/listings", async(req, res) => {
+    // const {title, description, price, country, etc...} = req.body;
+    const newListing = new Listing(req.body.listing);
+    await newListing.save();
+
+    console.log("New Listing Added Successfully...");
+    res.redirect("/listings");
+
+})
+
+
+//READ (Show Route)
+app.get("/listings/:id", async (req, res) => {
+    let { id } = req.params;
+    let listing = await Listing.findById(id);
+    res.render("listings/show.ejs", {listing});
+
+    console.log("Listing available...");
+})
+
+
+
+
 
 // Start Server
 app.listen(PORT, ()=>{
