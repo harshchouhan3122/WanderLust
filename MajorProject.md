@@ -5,7 +5,7 @@
     - Ctrl + C -> to stop the server
 
 
-## Phase 1 -> Part a
+## Phase 1 -> Part a (Database Setup and CRUD APIs)
 
 
 ### Installation
@@ -134,4 +134,30 @@
 
 
 ### UPDATE (Edit & Update Route)
+    - npm i method-override
+
+    - app.js
+        - const methodOverride = require("method-override");
+        - app.use(methodOverride("_method"));
+        - await Listing.findByIdAndUpdate(id, { ...req.body.listing});
+    
+    - edit.ejs
+        - <form method="POST" action="/listings/<%=listing._id%>?_method=PUT">
+
+
+### DELETE Route
+    - show.ejs 
+        - Create a Delete Button under a new form
+
+    - app.js
+        - await Listing.findByIdAndDelete(id);
+
+
+
+
+
+
+## Phase 1 -> Part b (Styling)
+
+### Creating BoilerPlate
     - 

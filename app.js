@@ -8,8 +8,16 @@ const PORT = 3000;
 
 const Listing = require("./models/listing.js");
 const path = require("path");
+const methodOverride = require("method-override");
 
 app.use(express.urlencoded({extended:true}))            // to get the parameters from the query String 
+app.use(methodOverride("_method"));                      //for PUT request in UPDATE Route
+
+
+// for index.ejs 
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 
 
 
@@ -56,9 +64,7 @@ app.get("/", (req, res)=>{
 
 
 
-// for index.ejs 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+
 
 
 // Create Route (Index Route)
@@ -101,7 +107,34 @@ app.get("/listings/:id", async (req, res) => {
 })
 
 
+// EDIT route
+app.get("/listings/:id/edit", async (req, res) => {
+    let {id} = req.params;
+    let listing = await Listing.findById(id);
+    // console.log(listing);
 
+    console.log('Edit your Listing...')
+    res.render("edit.ejs", {listing});
+})
+
+// UPDATE Route
+app.put("/listings/:id", async(req, res) => {
+    let { id } = req.params;
+    await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 
+
+    res.redirect(`/listings/${id}`);
+    console.log("Listing Edited Successfully...");
+})
+
+
+// DELETE Route
+app.delete("/listings/:id", async (req, res) => {
+    let { id } = req.params;
+    await Listing.findByIdAndDelete(id);
+
+    console.log("Listing Deleted...");
+    res.redirect('/listings');
+})
 
 
 // Start Server
