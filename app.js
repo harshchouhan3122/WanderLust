@@ -10,8 +10,13 @@ const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
 
+const ejsMate = require("ejs-mate");
+
+
 app.use(express.urlencoded({extended:true}))            // to get the parameters from the query String 
-app.use(methodOverride("_method"));                      //for PUT request in UPDATE Route
+app.use(methodOverride("_method"));                     //for PUT request in UPDATE Route
+app.engine("ejs", ejsMate);
+app.use(express.static(path.join(__dirname, "/public")));       //for CSS styling
 
 
 // for index.ejs 

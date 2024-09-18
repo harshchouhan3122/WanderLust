@@ -156,8 +156,47 @@
 
 
 
-
 ## Phase 1 -> Part b (Styling)
 
 ### Creating BoilerPlate
+    - EJS mate
+        - it helps to create templates so that you can use that one in other EJS files
+            - Navbar, Footer etc
+            - Its like REACT
+
+        - https://www.npmjs.com/package/ejs-mate?activeTab=readme
+        - npm i ejs-mate
+        - const ejsMate = require("ejs-mate");
+        - app.engine("ejs", ejsMate);
+
+    - Create layouts folder inside views folder
+        - create boilerplate.ejs (common code in every other file)
+
+    - Create public folder in root directory
+        - create css folder
+            style.css
+
+        - app.js
+            - app.use(express.static(path.join(__dirname, "/public")));
+
+### Creating Navbar
+    - include bootstrap as cdn
+    - also include js styling
+    - then include the code of simple navbar from the official website
+
+    - Create include folder inside the views folder
+        - create navbar.ejs
+    
+    - boilerplate.ejs
+        - <%- include("../includes/navbar.ejs") %>
+
+    #### ICONS
+        - fontawesome (https://fontawesome.com/icons)
+        - include cdn of font awesome
+            - paste it oin the boilerplate.ejs
+                - <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        - manual Styling
+        - <nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
+
+### Creating Footer
     - 
