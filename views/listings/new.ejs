@@ -8,21 +8,46 @@
 
 <% layout('/layouts/boilerplate') -%>
 
-<body>
-    <h3>Create a New Listing:</h3>
+<div class="row ">
+    <div class="col-8  offset-2">
+        <body>
+            <h3 class="mb-4">Create a New Listing</h3>
+            <form method="POST" action="/listings">
+        
+            <div class="mb-4">
+                <label for="title" class="form-label">Title</label>
+                <input class="form-control" type="text" name="listing[title]" placeholder="Add a catchy title"> 
+            </div>
+            <div class="mb-4">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" name="listing[description]" id="" placeholder="Description"></textarea>
+            </div>
+            <div class="row">
+                <div class="mb-4 col-md-4">
+                    <label for="price" class="form-label">Price</label>
+                    <input class="form-control" type="number" name="listing[price]" placeholder="1200 / night">
+                </div>
+                <div class="mb-4 col-md-8">   
+                    <label for="country" class="form-label">Country</label>
+                    <input class="form-control" type="text" name="listing[country]" placeholder="India"> 
+                </div>
+            </div>
+            <div class="mb-4">
+                <label for="image" class="form-label">Image Link</label>
+                <input class="form-control" type="text" name="listing{image}" placeholder="Enter image url">
+            </div>
+            <div class="mb-4">
+                <label for="location" class="form-label">Location</label>
+                <input class="form-control" type="text" name="listing[location]" placeholder="Vidhansabha, Delhi"> 
+            </div>
 
-    <form method="POST" action="/listings">
+                <br><br>
+                <button class="btn btn-dark add-btn">Add</button>
+            </form>
+        
+            <!-- <br><br> <a href="/listings">All Listings</a> -->
+        </body>
+    </div>
+</div>
 
-    <input type="text" name="listing[title]" placeholder="title"> <br> <br>
-    <textarea name="listing[description]" id="" placeholder="description"></textarea>  <br> <br>
-    <input type="number" name="listing[price]" placeholder="price"> <br> <br>
-    <input type="text" name="listing{image}" placeholder="image"> <br> <br>
-    <input type="text" name="listing[location]" placeholder="location"> <br> <br>
-    <input type="text" name="listing[country]" placeholder="country"> <br> <br>
-
-        <button>Submit</button>
-    </form>
-
-    <!-- <br><br> <a href="/listings">All Listings</a> -->
-</body>
 <!-- </html> -->

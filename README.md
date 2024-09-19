@@ -199,4 +199,46 @@
         - <nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
 
 ### Creating Footer
+    - styling footer from bootstrap
+    #### Stick the footer at the bottom of the page
+    - style.css
+        - body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container{
+            flex: 1;
+        } 
+
+### Styling Index (Home Page where All Listings are Shown)
+    - Cards using bootstrap
+
+    #### Fonts 
+        - https://fonts.google.com/?query=Plus+Jakarta
+            - boilerplate.ejs
+                - add links
+            - style.css
+                - body add font family
+
+    - add card
+    - responsive row
+    - card height width
+    - google fonts
+    - card selection functionality
+    - card overlay
+
+### Styling New Listing (Form Page)
+    - https://getbootstrap.com/docs/5.3/forms/form-control/
+
+    - add label
+    - add class form-control and form-label
+        <div class="mb-4">
+            <label for="price" class="form-label">Price</label>
+            <input class="form-control" type="number" name="listing[price]" placeholder="price">
+        </div>
+    - footer stick to bottom
+    - add-btn color change
+
+### Styling edit Listing
     - 
