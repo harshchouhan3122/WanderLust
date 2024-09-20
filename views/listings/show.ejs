@@ -1,22 +1,51 @@
 
 <% layout('/layouts/boilerplate') -%>
 
-<body>
-    <h3> Listing Details:  </h3>
-    <ul>
-        <li> TITLE: <%= listing.title %> </li>
-        <!-- <li> < listing.image.url %> </li> -->
-        <!-- <li> ID: < listing.id %> </li> -->
-        <li> DESCRIPTION: <%= listing.description %> </li>
-        <li> PRICE: &#8377; <%= listing.price.toLocaleString("en-IN") %> </li>
-        <li> LOCATION: <%= listing.location %> </li>
-        <li> COUNTRY: <%= listing.country %> </li>
-    </ul>
-    <a href="/listings/<%=listing.id%>/edit">Edit this Listing</a> <br><br>
-    <!-- <a href="/listings">All Listings</a> -->
+<div class="row">
+    <div class="col-10 offset-3">
 
-        <br> <br>
-    <form method="POST" action="/listings/<%=listing.id%>?_method=DELETE">
-        <button>Delete this Listing</button>
-    </form>
-</body>
+        <body>
+            <h3 class="mb-4"> Listing Details</h3>
+
+            <div class="card col-md-7 show-card" >
+                <a href="<%= listing.image.url %>" target="_blank">
+                    <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="listing_img">
+                </a>
+                <div class="card-body mt-2">
+                    <p class="card-text">
+                        <b> <%= listing.title %> </b> <br>
+                        <%= listing.description %> <br>
+                        &#8377; <%= listing.price.toLocaleString("en-IN") %> / night <br>
+                        <%= listing.location %>, <br>
+                        <%= listing.country %> <br>
+                    </p>
+                </div> 
+            </div>
+
+            <!-- <ul>
+                <li> TITLE: <= listing.title %> </li>
+                <li> < listing.image.url %> </li>
+                <li> ID: < listing.id %> </li>
+                <li> DESCRIPTION: <= listing.description %> </li>
+                <li> PRICE: &#8377; <= listing.price.toLocaleString("en-IN") %> </li>
+                <li> LOCATION: <= listing.location %> </li>
+                <li> COUNTRY: <= listing.country %> </li>
+            </ul> -->
+
+            <div class="row">
+                <div class="col-md-1 mb-4 mr-sm-3">
+                    <a href="/listings/<%=listing.id%>/edit" class="btn btn-dark edit-btn">Edit</a>  
+                </div>
+                <div class="col-md-1">
+                    <form method="POST" action="/listings/<%=listing.id%>?_method=DELETE">
+                        <button class="btn btn-dark delete-btn">Delete</button>
+                    </form>
+                </div>
+            </div>
+
+        </body>
+
+    </div>
+</div>
+
+

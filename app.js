@@ -119,13 +119,15 @@ app.get("/listings/:id/edit", async (req, res) => {
     // console.log(listing);
 
     console.log('Edit your Listing...')
-    res.render("edit.ejs", {listing});
+    res.render("listings/edit.ejs", {listing});
 })
 
 // UPDATE Route
 app.put("/listings/:id", async(req, res) => {
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 
+
+    console.log({ ...req.body.listing});
 
     res.redirect(`/listings/${id}`);
     console.log("Listing Edited Successfully...");

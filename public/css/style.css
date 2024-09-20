@@ -104,10 +104,53 @@ body {
 
 
 /* New Listing */
+
 .add-btn{
     background-color: #fe424d !important;
     color: white !important;
     border: none !important;
     /* transform: scale(1.1); */
     font-weight: bold !important;
+}
+
+.add-btn:hover{
+    transform: scale(1.1);
+}
+
+
+
+/* Edit Listing */
+
+.edit-btn{
+    background-color: #fe424d !important;
+    color: white !important;
+    border: none !important;
+    /* transform: scale(1.1); */
+    font-weight: bold !important;
+}
+
+.edit-btn:hover{
+    transform: scale(1.1);
+}
+
+
+/* Show Page */
+.show-img{
+    height: 30vh;
+}
+
+.delete-btn{
+    /* background-color: #fe424d !important; */
+    color: white !important;
+    border: none !important;
+    font-weight: bold !important;
+}
+
+.delete-btn:hover{
+    transform: scale(1.1);
+}
+
+.show-card{
+    padding-left: 0;
+    padding-right: 0;
 }

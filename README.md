@@ -240,5 +240,11 @@
     - footer stick to bottom
     - add-btn color change
 
-### Styling edit Listing
-    - 
+### Styling Edit Listing page
+    - convert edit.ejs as new.ejs and add following class
+        - form-control
+        - form-label
+    
+### Styling Show Listing page
+    - Using card Component from the Bootstrap
+        - 
