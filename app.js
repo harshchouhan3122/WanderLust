@@ -95,60 +95,28 @@ app.get("/listings/new", (req, res) => {
     console.log("Loading Form to Create new Listing...");
 });
 
-// // Add New Listing to DB    (CREATE ROUTE)
-// app.post("/listings", async(req, res) => {
-//     // const {title, description, price, country, etc...} = req.body;
-//     const newListing = new Listing(req.body.listing);
-//     await newListing.save();
 
-//     console.log("New Listing Added Successfully...");
-//     res.redirect("/listings");
-
-// })
 // Add New Listing to DB    (CREATE ROUTE)
-// app.post("/listings", async(req, res, next) => {
-//     try {
-//         // const {title, description, price, country, etc...} = req.body;
-//         const newListing = new Listing(req.body.listing);
-//         await newListing.save();
-
-//         console.log("New Listing Added Successfully...");
-//         res.redirect("/listings");
-
-//     } catch (err) {
-//         next(err);
-//     }
-
-// });
 // using wrapAsync
 app.post("/listings", wrapAsync( async(req, res, next) => {
     // const {title, description, price, country, etc...} = req.body;
-
-    // Handling Error using ExpressError if body doesn't contain the listing object
-    // if (!req.body.listing) {
+    
+    // if (!req.body.listing) {     // Handling Error using ExpressError if body doesn't contain the listing object
     //     throw new ExpressError(400, "Send a valid data for Listing.");
     // };
 
-    // console.log(`BODY OF REQUEST:   ${req.body.listing}`);
-    let result = validateListing.validate(req.body);       //Schema Validation using JOI
-    console.log(result);
 
-    // const { error } = validateListing.validate(req.body);
-    // if (error) return res.status(400).send(error.details[0].message);
+    // let result = validateListing.validate(req.body);       //Schema Validation using JOI
+    // console.log(result);
+
+    const { error } = validateListing.validate(req.body);
+    if (error) {
+        throw new ExpressError(400, error.details[0].message);
+    }
 
     const newListing = new Listing(req.body.listing);
     await newListing.save();
 
-    // Error Handling if the list object not contains the required field according to the schema    -> Not a good way to write it as this, So we use JOY DEV
-    // if (!newListing.title) {
-    //     throw new ExpressError(400, "Title is missing.");
-    // };
-    // if (!newListing.price) {
-    //     throw new ExpressError(400, "Price is missing.");
-    // };
-    // if (!newListing.description) {
-    //     throw new ExpressError(400, "Description is missing.");
-    // };
 
     console.log("New Listing Added Successfully...");
     res.redirect("/listings");
@@ -178,9 +146,14 @@ app.get("/listings/:id/edit", wrapAsync( async (req, res, next) => {
 
 // UPDATE Route
 app.put("/listings/:id", wrapAsync( async(req, res, next) => {
-    if (!req.body.listing) {
-        throw new ExpressError(400, "Send a valid data for Listing.");
-    };    
+    // if (!req.body.listing) {
+    //     throw new ExpressError(400, "Send a valid data for Listing.");
+    // };    
+
+    const { error } = validateListing.validate(req.body);
+    if (error) {
+        throw new ExpressError(400, error.details[0].message);
+    };
 
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 
@@ -216,8 +189,8 @@ app.use((err, req, res, next) => {
     let { statusCode = 500, message="Something Went Wrong!!" } = err;
     // res.status(statusCode).send(message);
 
-    // console.log(`ERROR OCCURED: ${message}`);
-    console.log(`ERROR OCCURED: ${err.stack}`);
+    console.log(`/// ERROR OCCURED ///  -> ${message}`);
+    // console.log(`ERROR OCCURED: ${err.stack}`);
     res.status(statusCode).render("error.ejs", { err });
 });
 

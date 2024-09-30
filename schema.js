@@ -38,7 +38,7 @@ const validateListing = Joi.object({
     }).required()
 });
 
-module.exports = validateListing;
+module.exports = { validateListing };
 
 
 

@@ -429,27 +429,62 @@
         - schema.js -> Define the Schema for the Server Side Validation using example https://joi.dev/api/?v=17.13.3
 
             const Joi = require('joi');
-            const listingSchema = Joi.object({
-                listing : Joi.object({
-                    title: Joi.string().required(),
-                    description: Joi.string().required(),
-                    price: Joi.number().required().min(0),
-                    country: Joi.string().required(),
-                    location: Joi.string().required(),
-                    image: Joi.object({
-                        filename: Joi.string(),
-                        url: Joi.string().allow("", null),
+            const validateListing = Joi.object({
+                listing: Joi.object({
+                    title: Joi.string().required().messages({
+                        'string.empty': 'Title is required.'
                     }),
+                    description: Joi.string().required().messages({
+                        'string.empty': 'Description is required.'
+                    }),
+                    price: Joi.number().required().min(0).messages({
+                        'number.base': 'Price must be a valid number.',
+                        'number.min': 'Price must be greater than or equal to 0.',
+                        'any.required': 'Price is required.'
+                    }),
+                    country: Joi.string().required().messages({
+                        'string.empty': 'Country is required.'
+                    }),
+                    location: Joi.string().required().messages({
+                        'string.empty': 'Location is required.'
+                    }),
+                    image: Joi.object({
+                        url: Joi.string().uri().allow('', null).messages({
+                            'string.uri': 'Image URL must be a valid URI.'
+                        }),
+                        filename: Joi.string().allow('', null).optional() // Allow empty or null for optional filename
+                    }).optional()
+
                 }).required()
             });
-            module.exports  = listingSchema;
+            module.exports = { validateListing };
+
+
+        - new.ejs
+            <div class="mb-4">
+                <label for="image" class="form-label">Image Link</label>
+                <!-- <input class="form-control" type="text" name="listing{image}" placeholder="Enter image url"> -->
+                <input class="form-control" type="url" name="listing[image][url]" placeholder="Enter image url">
+            </div>
+
 
         - app.js
             - require, remove multiple if's, let result = listingSchema.validate(req.body);, if(result.error){throw new ExpressError(400,"result.error")};
 
-            const { listingSchema } = require("./schema.js");
+            //const { listingSchema } = require("./schema.js");
+            const { validateListing } = require("./schema.js");
 
+            //Update Create Route (New Listing)
             let result = listingSchema.validate(req.body);       //Schema Validation using JOI
             console.log(result);
 
+            const { error } = validateListing.validate(req.body);
+            if (error) {
+                throw new ExpressError(400, error.details[0].message);
+            }
+
+            - Update this validation for the EDIT Route
+
+
 ## Validation for Schema (writing Middleware)
+    - 
