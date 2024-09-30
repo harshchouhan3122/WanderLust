@@ -2,11 +2,14 @@
 
     - cmd to project folder
     - nodemon app.js -> to start the server
+    - start mongosh
+        - use wanderlust
     - Ctrl + C -> to stop the server
+
+    - NOTE: Stop the server before installing any additional package of npm
 
 
 ## Phase 1 -> Part a (Database Setup and CRUD APIs)
-
 
 ### Installation
     - npm init
@@ -156,6 +159,7 @@
 
 
 
+
 ## Phase 1 -> Part b (Styling)
 
 ### Creating BoilerPlate
@@ -247,4 +251,205 @@
     
 ### Styling Show Listing page
     - Using card Component from the Bootstrap
-        - 
+
+
+
+
+
+## Phase 1 -> Part c (Error Handeling)
+
+### Client Side Validation (Form)   -> new.ejs      -> Frontend Form Validations
+    #### Form Validation
+    - When we eneter the data in the form, the browser and /or the web server will check to see that the data is in the correct format and within the constraints set by the application.
+
+    - Required
+        - Title, Location Price etc
+
+    - We are going to design standard website for all the browsers so use bootstrap required
+        - https://getbootstrap.com/docs/5.3/forms/validation/
+        - class="needs-validation", nonvalidate
+        
+        - Create js folder inside public forlder
+            - Create script.js -> Javascript logical code (for new.js)
+            - Add this js file to boilerplate.ejs or you can add it to edit.ejs and new.ejs only
+
+
+### Success & Failure Text (Frontend Validations)
+    - Explanation of the missing field in form validation
+    - new.ejs
+        - add new <div class="invalid-feedback"> Price should be valid. </div>
+        - add new <div class="valid-feedback"> Title looks good! </div>
+
+    - Also update the edit.ejs with these text and validations
+
+
+### Custom Error Handling (Backend Validations)
+    - Suppose you have directly calling the path/api from the postman/hoppscotch, for that we have to create Custom Error Handler becuase in previous two sections we have implemented the Frontend Form Validations.
+
+    - app.js    (Define Error Handler Middlewares at the end)
+
+        // Custom Error Handler
+        app.use((err, req, res, next) => {
+            console.log('Something went Wrong! ');
+            res.send('Something went Wrong! ');
+        });
+
+        // Updated Create Route 1
+        app.post("/listings", async(req, res, next) => {
+            try {
+                // const {title, description, price, country, etc...} = req.body;
+                const newListing = new Listing(req.body.listing);
+                await newListing.save();
+                console.log("New Listing Added Successfully...");
+                res.redirect("/listings");
+
+            } catch (err) {
+                next(err);
+            }
+        });
+
+
+### Custom wrapAsync
+    - Its a better way to write try-catch block for Async Error Handling. (Lecture 52: Custom Error Handling.)
+    
+    - Create utils folder in root directory
+        - Store extra files here
+        - Create wrapAsync.js
+            module.exports = (fn) => {
+                return (req, res, next) => {
+                    // fn(req, res, next).catch((err) => next(err));
+                    fn(req, res, next).catch(next);
+                }
+            };
+
+        - app.js
+            const wrapAsync = require("./utils/wrapAsync.js");
+
+            // Updated Create Route 2
+            app.post("/listings", wrapAsync (async(req, res, next) => {
+                // const {title, description, price, country, etc...} = req.body;
+                const newListing = new Listing(req.body.listing);
+                await newListing.save();
+
+                console.log("New Listing Added Successfully...");
+                res.redirect("/listings");
+                })
+            );
+
+
+### Add ExpressError (Lecture 52)
+    - Create ExpressError.js inside the utils folder for the Custom Error Class
+        class ExpressError extends Error {
+            constructor(status, message) {
+                super();
+                this.statusCode = status;
+                this.message = message;
+            }
+        };
+        module.exports = ExpressError;
+
+    - app.js
+        const ExpressError = require("./utils/ExpressError.js");
+
+        app.all("*", (req, res, next) => {
+            next(new ExpressError(404, "Page Not Found !"));
+        });
+
+
+        // Custom Error Handler
+        app.use((err, req, res, next) => {
+            // console.log('Something went Wrong! ');
+            // res.send('Something went Wrong! ');
+
+            let { statusCode = 500, message="Something Went Wrong!!" } = err;
+            res.status(statusCode).send(message);
+        });
+
+    - update all the async function with wrapAsync in app.js    -> (req, res, next) no next
+
+    - update post request of listings and update route also
+        if (!req.body.listing) {
+            throw new ExpressError(400, "Send a valid data for Listing.");
+        };
+
+
+
+## Error.ejs
+    - Create error.ejs inside the views folder and use bootsrap to create it 
+    
+    - error.ejs
+        < layout('/layouts/boilerplate') -%>
+        <div class="row">
+            <div class="alert alert-danger col-6 offset-3" role="alert">
+                <h5> <%= err.message %> </h5>
+                <!-- <p> <= err.stack %> </p> -->
+            </div>
+        </div>
+
+    - app.js
+        // Custom Error Handler
+        app.use((err, req, res, next) => {
+            // console.log('Something went Wrong! ');
+            // res.send('Something went Wrong! ');
+
+            let { statusCode = 500, message="Something Went Wrong!!" } = err;
+            // res.status(statusCode).send(message);
+
+            console.log(`ERROR OCCURED: ${message}`);
+            // console.log(`ERROR OCCURED: ${err.stack}`);
+            res.status(statusCode).render("error.ejs", { err });
+        });
+
+
+## Validation for Schema (using JOI dev tool)
+    - Currently we are able to make the POST request to change the db using hoppscotch or postman without any error (without providing required fields, since we have validate the frontend of the form till now)
+
+    - for that missmanagement of missed fields , we have to validate the Schema before saving the data in db
+
+    - app.js (NEW ROUTE/ CREATE ROUTE)
+        // Error Handling if the list object not contains the required field according to the schema    -> Not a good way to write it as this, So we use JOI DEV TOOL
+        // if (!newListing.title) {
+        //     throw new ExpressError(400, "Title is missing.");
+        // };
+        // if (!newListing.price) {
+        //     throw new ExpressError(400, "Price is missing.");
+        // };
+        // if (!newListing.description) {
+        //     throw new ExpressError(400, "Description is missing.");
+        // };
+
+    #### (Important)
+    - JOI Tool  (https://www.npmjs.com/package/joi)
+        -> Used for object schema validation, Data validator for the javascript
+        -> Its a npm module (Example: https://joi.dev/api/?v=17.13.3)
+        
+        -> npm install joi
+
+    - Create schema.js in the root directory
+        - schema.js -> Define the Schema for the Server Side Validation using example https://joi.dev/api/?v=17.13.3
+
+            const Joi = require('joi');
+            const listingSchema = Joi.object({
+                listing : Joi.object({
+                    title: Joi.string().required(),
+                    description: Joi.string().required(),
+                    price: Joi.number().required().min(0),
+                    country: Joi.string().required(),
+                    location: Joi.string().required(),
+                    image: Joi.object({
+                        filename: Joi.string(),
+                        url: Joi.string().allow("", null),
+                    }),
+                }).required()
+            });
+            module.exports  = listingSchema;
+
+        - app.js
+            - require, remove multiple if's, let result = listingSchema.validate(req.body);, if(result.error){throw new ExpressError(400,"result.error")};
+
+            const { listingSchema } = require("./schema.js");
+
+            let result = listingSchema.validate(req.body);       //Schema Validation using JOI
+            console.log(result);
+
+## Validation for Schema (writing Middleware)
