@@ -73,6 +73,17 @@ app.get("/", (req, res)=>{
 // })
 
 
+// Creating Middleware to validate Listing for Create and Update Route
+const checkListing = (req, res, next) => {
+    const { error } = validateListing.validate(req.body);
+    if (error) {
+        let errMsg = error.details.map((el) => el.message).join(",");
+        throw new ExpressError(400, errMsg);
+        // throw new ExpressError(400, error.details[0].message);
+    } else {
+        next();
+    }
+}
 
 
 
@@ -98,7 +109,7 @@ app.get("/listings/new", (req, res) => {
 
 // Add New Listing to DB    (CREATE ROUTE)
 // using wrapAsync
-app.post("/listings", wrapAsync( async(req, res, next) => {
+app.post("/listings", checkListing, wrapAsync( async(req, res, next) => {
     // const {title, description, price, country, etc...} = req.body;
     
     // if (!req.body.listing) {     // Handling Error using ExpressError if body doesn't contain the listing object
@@ -109,10 +120,6 @@ app.post("/listings", wrapAsync( async(req, res, next) => {
     // let result = validateListing.validate(req.body);       //Schema Validation using JOI
     // console.log(result);
 
-    const { error } = validateListing.validate(req.body);
-    if (error) {
-        throw new ExpressError(400, error.details[0].message);
-    }
 
     const newListing = new Listing(req.body.listing);
     await newListing.save();
@@ -145,15 +152,10 @@ app.get("/listings/:id/edit", wrapAsync( async (req, res, next) => {
 }));
 
 // UPDATE Route
-app.put("/listings/:id", wrapAsync( async(req, res, next) => {
+app.put("/listings/:id", checkListing, wrapAsync( async(req, res, next) => {
     // if (!req.body.listing) {
     //     throw new ExpressError(400, "Send a valid data for Listing.");
     // };    
-
-    const { error } = validateListing.validate(req.body);
-    if (error) {
-        throw new ExpressError(400, error.details[0].message);
-    };
 
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 

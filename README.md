@@ -487,4 +487,18 @@
 
 
 ## Validation for Schema (writing Middleware)
-    - 
+    - We can create a function for this validation and call it whenever needed without defining everytime
+    
+    - app.js
+        // Creating Middleware to validate Listing for Create and Update Route
+        const checkListing = (req, res, next) => {
+            const { error } = validateListing.validate(req.body);
+            if (error) {
+                throw new ExpressError(400, error.details[0].message);
+            } else {
+                next();
+            }
+        }
+
+        - and then pass it as middleware in Create and Update Route
+
