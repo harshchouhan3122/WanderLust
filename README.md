@@ -374,7 +374,7 @@
 
 
 
-## Error.ejs
+### Error.ejs
     - Create error.ejs inside the views folder and use bootsrap to create it 
     
     - error.ejs
@@ -401,7 +401,7 @@
         });
 
 
-## Validation for Schema (using JOI dev tool)
+### Validation for Schema (using JOI dev tool)
     - Currently we are able to make the POST request to change the db using hoppscotch or postman without any error (without providing required fields, since we have validate the frontend of the form till now)
 
     - for that missmanagement of missed fields , we have to validate the Schema before saving the data in db
@@ -486,7 +486,7 @@
             - Update this validation for the EDIT Route
 
 
-## Validation for Schema (writing Middleware)
+### Validation for Schema (writing Middleware)
     - We can create a function for this validation and call it whenever needed without defining everytime
     
     - app.js
@@ -501,4 +501,79 @@
         }
 
         - and then pass it as middleware in Create and Update Route
+
+
+
+
+
+## Phase 2 -> Part a    ()
+
+### Handeling Deletion
+    - Cascading of Deletion
+        - Deleting other documents related to one document which we have to delete
+        - Deleting Posts related to user Account when we dare deleting the user Account.
+
+    - using Mongoose Middleware (Different from the express Middlewares) -> https://mongoosejs.com/docs/middleware.html
+        - Currently we are focus on Query Middlewares
+
+
+#### Use the customer.js from lecture no.54 Database relationships
+    - Two Functions
+        - Add customers
+            const addCustomer= async() => {
+                let newCust = new Customer({
+                    name: "Karan Bhai",
+                });
+                await newCust.save();
+
+                let newOrder = new Order({
+                    item: "Pizza",
+                    price: 550,
+                });
+                await newOrder.save();
+
+                newCust.orders.push(newOrder);
+                await newCust.save();
+
+            };
+
+
+        - Delete Customers
+            const deleteCustomer = async() => {
+                let data = await Customer.findByIdAndDelete("670f85d70e111c6f1e4c6ea6");
+                console.log(data);
+            };
+
+### Mongoose middleware (https://mongoosejs.com/docs/middleware.html)
+    - We have to use Mongoose middleware to delete the orders related to the customer which we have to delete. -> By using POST Query Mongoose Middleware
+
+    - We can use two middleware
+        - Pre -> run before the query is executed
+        - Post -> run after the query is executed
+
+    - findByIdAndDelete() triggers the mongoose middleware -> findOneAndDelete()
+        - https://mongoosejs.com/docs/api/model.html#Model.findByIdAndDelete()
+    
+
+    - Mention the Pre and post Middlewares just after the Schema Defined.
+        customerSchema.pre("findOneAndDelete", async() => {
+            console.log("PRE Middleware Works....");
+        });
+
+#### Deleting all the Orders associated with the deleting customer
+    // We wanna delete orders of deleted Customer
+    customerSchema.post("findOneAndDelete", async(customer) => {
+        // console.log(customer);
+        if (customer.orders.length){
+            let res = await Order.deleteMany({_id: {$in: customer.orders} });
+            console.log(res);
+        }
+    });
+
+    const deleteCustomer = async() => {
+        let data = await Customer.findByIdAndDelete("670f8f998e92ede4c1262553");    //Customer ID
+        console.log(data);
+    };
+
+    deleteCustomer();
 
