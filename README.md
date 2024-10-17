@@ -577,3 +577,70 @@
 
     deleteCustomer();
 
+
+
+### Creating Review Model (One to many Relationship)
+    - Following data to be present in each review
+        - comment (String)
+        - rating (Number)
+        - createdAt (date and time)
+
+    - Create review.js inside the models folder
+        const mongoose = require("mongoose");
+        const Schema = mongoose.Schema;
+
+        const reviewSchema = new Schema({
+            comment: String,
+            rating: {
+                type: Number,
+                min: 1,
+                max: 5,
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now(),
+            },
+        });
+
+        module.exports = mongoose.model("Review",reviewSchema);
+    
+    - Edit listing.js inside model folder
+        - Update the Schema with reviews section
+        - Reviews -> One to Many Relation -> Using Array
+
+            review: [
+              {
+                type: Schema.Types.ObjectId,
+                ref: "Review",
+              }
+            ],
+    
+### Create review
+
+#### Setting up the Review Form (Step 1)
+    - Review Form -> Adding this section below the listing details in show.ejs page
+
+#### Submitting the Reviw form (Step 2) -> Backend
+    - POST /listings/:id/reviews
+    - Edit app.js
+        - const Review = require("./models/review.js");
+        - Create Review POST request
+
+        // REVIEWS Route
+        app.post("/listings/:id/reviews", wrapAsync( async (req, res, next) => {
+        
+            let listing = await Listing.findById(req.params.id);
+            // console.log(req.body.review);
+            let newReview = new Review(req.body.review);
+
+            listing.reviews.push(newReview);
+
+            await newReview.save();
+            await listing.save();
+
+            console.log("New review Saved...");
+            res.redirect(`/listings/${listing._id}`);
+        }));
+
+
+#### Validation for Reviews (Client Side and Server Side both)

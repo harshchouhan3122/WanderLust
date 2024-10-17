@@ -17,6 +17,8 @@ const ExpressError = require("./utils/ExpressError.js");
 // const { listingSchema } = require("./schema.js");
 const { validateListing } = require("./schema.js");
 
+const Review = require("./models/review.js");
+
 
 app.use(express.urlencoded({extended:true}))                    // to get the parameters from the query String 
 app.use(methodOverride("_method"));                             //for PUT request in UPDATE Route
@@ -115,7 +117,7 @@ app.get("/listings/:id/edit", wrapAsync( async (req, res, next) => {
     let listing = await Listing.findById(id);
     // console.log(listing);
 
-    console.log('Edit your Listing...')
+    console.log('Loading Form to Edit Listing......')
     res.render("listings/edit.ejs", {listing});
 }));
 
@@ -129,21 +131,38 @@ app.put("/listings/:id", checkListing, wrapAsync( async(req, res, next) => {
     console.log({ ...req.body.listing});
 
     res.redirect(`/listings/${id}`);
-    console.log("Listing Edited Successfully...");
+    console.log("Listing Edited and Updated Successfully...");
 }));
 
 
 // DELETE Route
 app.delete("/listings/:id", wrapAsync( async (req, res, next) => {
     let { id } = req.params;
-    await Listing.findByIdAndDelete(id);
+    let result = await Listing.findByIdAndDelete(id);
 
-    console.log("Listing Deleted...");
+    console.log(`Listing Deleted... -> ${result.title},${result.location},${result.country}`);
     res.redirect('/listings');
 }));
 
 
-// If the request isn't match witht the above paths
+// REVIEWS Route
+app.post("/listings/:id/reviews", wrapAsync( async (req, res, next) => {
+
+    let listing = await Listing.findById(req.params.id);
+    // console.log(req.body.review);
+    let newReview = new Review(req.body.review);
+
+    listing.reviews.push(newReview);
+
+    await newReview.save();
+    await listing.save();
+
+    console.log("New review Saved...");
+    res.redirect(`/listings/${listing._id}`);
+}));
+
+
+// If the request isn't match with the above paths
 app.all("*", (req, res, next) => {
     next(new ExpressError(404, "Page Not Found !"));
 });
