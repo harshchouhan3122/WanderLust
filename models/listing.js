@@ -2,6 +2,7 @@
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const Review = require("./review.js");
 
 const defaultImgURL = "https://unsplash.com/photos/a-paper-model-of-a-house-on-a-small-island-gTNAhl22eaE";
 
@@ -36,6 +37,14 @@ const listingSchema = new Schema({
       ref: "Review",
     }
   ],
+});
+
+
+// POST Mongoose Middleware for deleting reviews of Listing
+listingSchema.post("findOneAndDelete", async(listing) => {
+  if (listing) {
+    await Review.deleteMany({_id: {$in: listing.reviews}});
+  }
 });
 
 const Listing = mongoose.model("Listing", listingSchema);

@@ -506,7 +506,7 @@
 
 
 
-## Phase 2 -> Part a    ()
+## Phase 2 -> Part a    (Creating Review Section)
 
 ### Handeling Deletion
     - Cascading of Deletion
@@ -644,3 +644,83 @@
 
 
 #### Validation for Reviews (Client Side and Server Side both)
+
+    - Cliend Side Validation
+        - textarea -> required
+        - apply bootstrap form validation -> Class="needs-validation"
+            -                     <form action="/listings/<=listing.id%>/reviews" method="POST" novalidate class="needs-validation">
+
+        - logic of this need-validation is in script.js in public folder
+
+        - show.ejs
+        <div class="invalid-feedback">
+            Please add some comments for review.
+        </div>
+
+
+    - Server Side Validation
+        - Send a request using hoppscotch having no comment and no rating, It will save the review at the DB which is not good,
+        to avoid this situation we can do Server side Validation
+        - JOI schema -> function to validate schema -> pass this func as middleware to Review Route
+            - edit schema.js    -> add validateReview Joi Schema
+            - edit app.js       -> require validateReview then create validReview function and then pass it to Review Route as middleware
+            - check the functionality using hoppscotch.io
+
+
+### Render Reviews (to display reviews)
+    - Edit show.ejs
+        <h5 class="mb-3">All Reviews</h5>
+        <ul>
+            <% for(review of listing.reviews ) { %>
+                <li> <%= review.comment %>, <%= review.rating %> star </li> 
+            <% } %>
+        </ul>
+
+    - edit app.js
+        - update Show Route
+            let listing = await Listing.findById(id).populate("reviews");
+
+#### Styling Reviews
+    - Bootstrap cards to show reviews
+    - edit show.ejs
+        - add review card
+    - edit style.css
+        - add reviewCard
+        - change card to listing-card
+
+
+### Deleting Reviews
+    - Mongo $pull operator
+    - Add delete button inside each review in show.ejs using another form
+       <form method="POST" action="/listings/<= listing._id %>/reviews/<= review._id %>?method=DELETE" >
+    
+    - edit app.js
+        // REVIEW DELETE Route
+        app.delete("/listings/:id/reviews/    :reviewId", wrapAsync( async (req, res,next) => {
+            let { id, reviewId } = req.params;
+
+            await Listing.findByIdAndUpdate(id, {pull: {reviews: reviewId}});   //Updating the reviews array of Listing
+            await Review.findByIdAndDelete(reviewId);
+
+            console.log("Review Deleted...");
+            res.redirect(`/listings/${id}`);
+        }));
+
+
+#### Deleting Listing
+    - Delete reviews associated with the listing which we have to delete (handeling Deletion -> Phase 2 part a Mongoose Middlewares)
+    - DELETE middleware for Reviews
+        - POST Mongoose Middleware
+        - edit  listings.js
+            // POST Mongoose Middleware for deleting reviews of Listing
+            listingSchema.post("findOneAndDelete", async(listing) => {
+              if (listing) {
+                await Review.deleteMany({_id: {$in: listing.reviews}})
+              }
+            });
+
+
+
+## Phase 2 -> Part b    ()
+
+### 

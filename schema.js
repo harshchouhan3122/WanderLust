@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-
+// for Server Side validation
 // Define the Joi schema to match the form's nested structure
 const validateListing = Joi.object({
     listing: Joi.object({
@@ -41,7 +41,14 @@ const validateListing = Joi.object({
 module.exports = { validateListing };
 
 
-
+// Server Side Validation of Review
+module.exports.validateReview = Joi.object({
+    review : Joi.object({
+        rating: Joi.number().required().min(1).max(5),
+        comment: Joi.string().required()
+    
+    }).required()
+});
 
 
 
