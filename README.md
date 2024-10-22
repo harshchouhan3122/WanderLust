@@ -723,4 +723,40 @@
 
 ## Phase 2 -> Part b    ()
 
-### 
+### What is Express Router?
+    - Restructuring Listings (edit app.js)
+        const listings = require("./routes/listing.js");
+        app.use("/listings", listings)
+
+    - Create Route folder in root Directory
+        - Create listing.js inside Route Folder
+            - Required all the requirements
+            - Update path of request (remove listings from there)
+
+            // Create Route (Index Route    -> to show all the listings)
+            router.get("/", wrapAsync( async (req, res, next) => {
+                const allListings = await Listing.find({});
+                // console.log(allListings);
+                console.log("All Listings from the DB...");
+                // res.send(allListings);
+                res.render("listings/index.ejs", {allListings});
+            }) );
+
+        - Update app.js file
+            const listings = require("./routes/listing.js");
+            app.use("/listings", listings)
+
+        - Also create review.js inside routes and then move all the path request from app.js to review.js of reviews request
+
+
+### Using Express Router
+
+#### NOTE (merge params for review.js of routes)
+    - https://expressjs.com/en/guide/routing.html
+    - But if the parent route /birds has path parameters, it will not be accessible by default from the sub-routes. To make it accessible, you will need to pass the mergeParams option to the Router constructor reference.
+
+
+    - app.use("/listings/:id/reviews", reviews);    // Its a parent route present in app.js, and it has :id parameter for which we have to use mergeParams
+    - router.post("/", validReview, wrapAsync( async (req, res, next) => {}));    //Its a child route present in review.js
+    
+    const router = express.Router({ mergeParams: true })

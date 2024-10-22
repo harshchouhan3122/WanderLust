@@ -31,7 +31,9 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 
-
+// Import Listing Routes (Restructuring Request Paths)
+const listings = require("./routes/listing.js");
+const reviews = require("./routes/review.js");
 
 
 // Connect Databse
@@ -55,135 +57,138 @@ app.get("/", (req, res)=>{
 });
 
 
-// Creating Middleware to validate Listing for Create and Update Route
-const checkListing = (req, res, next) => {
-    const { error } = validateListing.validate(req.body);
-    if (error) {
-        let errMsg = error.details.map((el) => el.message).join(",");
-        throw new ExpressError(400, errMsg);
-        // throw new ExpressError(400, error.details[0].message);
-    } else {
-        next();
-    }
-}
+// // Creating Middleware to validate Listing for Create and Update Route
+// const checkListing = (req, res, next) => {
+//     const { error } = validateListing.validate(req.body);
+//     if (error) {
+//         let errMsg = error.details.map((el) => el.message).join(",");
+//         throw new ExpressError(400, errMsg);
+//         // throw new ExpressError(400, error.details[0].message);
+//     } else {
+//         next();
+//     }
+// }
 
 
 
-// Create Route (Index Route    -> to show all the listings)
-app.get("/listings", wrapAsync( async (req, res, next) => {
-    const allListings = await Listing.find({});
-    // console.log(allListings);
-    console.log("All Listings from the DB...");
-    // res.send(allListings);
-    res.render("listings/index.ejs", {allListings});
-}) );
+// // Create Route (Index Route    -> to show all the listings)
+// app.get("/listings", wrapAsync( async (req, res, next) => {
+//     const allListings = await Listing.find({});
+//     // console.log(allListings);
+//     console.log("All Listings from the DB...");
+//     // res.send(allListings);
+//     res.render("listings/index.ejs", {allListings});
+// }) );
 
 
-// CREATE ROUTE (new and create)  -> Always keep it above the READ route
-// Open form for this route
-app.get("/listings/new", (req, res) => {
-    res.render("listings/new.ejs");
+// // CREATE ROUTE (new and create)  -> Always keep it above the READ route
+// // Open form for this route
+// app.get("/listings/new", (req, res) => {
+//     res.render("listings/new.ejs");
 
-    console.log("Loading Form to Create new Listing...");
-});
-
-
-// Add New Listing to DB    (CREATE ROUTE)
-// using wrapAsync
-app.post("/listings", checkListing, wrapAsync( async(req, res, next) => {
-
-    const newListing = new Listing(req.body.listing);
-    await newListing.save();
-
-    console.log("New Listing Added Successfully...");
-    res.redirect("/listings");
-    })
-);
+//     console.log("Loading Form to Create new Listing...");
+// });
 
 
-// Listing READ (Show Route)
-app.get("/listings/:id", wrapAsync( async (req, res, next) => {
-    let { id } = req.params;
-    let listing = await Listing.findById(id).populate("reviews");
-    res.render("listings/show.ejs", {listing});
+// // Add New Listing to DB    (CREATE ROUTE)
+// // using wrapAsync
+// app.post("/listings", checkListing, wrapAsync( async(req, res, next) => {
 
-    console.log("Listing available...");
-}));
+//     const newListing = new Listing(req.body.listing);
+//     await newListing.save();
 
-
-// Listing EDIT route
-app.get("/listings/:id/edit", wrapAsync( async (req, res, next) => {
-    let {id} = req.params;
-    let listing = await Listing.findById(id);
-    // console.log(listing);
-
-    console.log('Loading Form to Edit Listing......')
-    res.render("listings/edit.ejs", {listing});
-}));
+//     console.log("New Listing Added Successfully...");
+//     res.redirect("/listings");
+//     })
+// );
 
 
-// Listing UPDATE Route
-app.put("/listings/:id", checkListing, wrapAsync( async(req, res, next) => {
+// // Listing READ (Show Route)
+// app.get("/listings/:id", wrapAsync( async (req, res, next) => {
+//     let { id } = req.params;
+//     let listing = await Listing.findById(id).populate("reviews");
+//     res.render("listings/show.ejs", {listing});
 
-    let { id } = req.params;
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 
-
-    console.log({ ...req.body.listing});
-
-    res.redirect(`/listings/${id}`);
-    console.log("Listing Edited and Updated Successfully...");
-}));
+//     console.log("Listing available...");
+// }));
 
 
-// Listing DELETE Route
-app.delete("/listings/:id", wrapAsync( async (req, res, next) => {
-    let { id } = req.params;
-    let result = await Listing.findByIdAndDelete(id);
+// // Listing EDIT route
+// app.get("/listings/:id/edit", wrapAsync( async (req, res, next) => {
+//     let {id} = req.params;
+//     let listing = await Listing.findById(id);
+//     // console.log(listing);
 
-    console.log(`Listing Deleted... -> ${result.title},${result.location},${result.country}`);
-    res.redirect('/listings');
-}));
-
-
-// Create Middleware to validate review
-const validReview = (req,res,next) => {
-    const { error } = validateReview.validate(req.body);
-    if (error) {
-        let errMsg = error.details.map((el) => el.message).join(",");
-        throw new ExpressError(400, errMsg);
-    } else {
-        next();
-    }
-}
+//     console.log('Loading Form to Edit Listing......')
+//     res.render("listings/edit.ejs", {listing});
+// }));
 
 
-// REVIEWS Route form new Review
-app.post("/listings/:id/reviews", validReview, wrapAsync( async (req, res, next) => {
+// // Listing UPDATE Route
+// app.put("/listings/:id", checkListing, wrapAsync( async(req, res, next) => {
+
+//     let { id } = req.params;
+//     await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 
+
+//     console.log({ ...req.body.listing});
+
+//     res.redirect(`/listings/${id}`);
+//     console.log("Listing Edited and Updated Successfully...");
+// }));
+
+
+// // Listing DELETE Route
+// app.delete("/listings/:id", wrapAsync( async (req, res, next) => {
+//     let { id } = req.params;
+//     let result = await Listing.findByIdAndDelete(id);
+
+//     console.log(`Listing Deleted... -> ${result.title},${result.location},${result.country}`);
+//     res.redirect('/listings');
+// }));
+
+app.use("/listings", listings);
+
+
+// // Create Middleware to validate review
+// const validReview = (req,res,next) => {
+//     const { error } = validateReview.validate(req.body);
+//     if (error) {
+//         let errMsg = error.details.map((el) => el.message).join(",");
+//         throw new ExpressError(400, errMsg);
+//     } else {
+//         next();
+//     }
+// }
+
+
+// // REVIEWS Route form new Review
+// app.post("/listings/:id/reviews", validReview, wrapAsync( async (req, res, next) => {
     
-    let listing = await Listing.findById(req.params.id);
-    // console.log(req.body.review);
-    let newReview = new Review(req.body.review);
+//     let listing = await Listing.findById(req.params.id);
+//     // console.log(req.body.review);
+//     let newReview = new Review(req.body.review);
 
-    listing.reviews.push(newReview);
+//     listing.reviews.push(newReview);
 
-    await newReview.save();
-    await listing.save();
+//     await newReview.save();
+//     await listing.save();
 
-    console.log("New review Saved...");
-    res.redirect(`/listings/${listing._id}`);
-}));
+//     console.log("New review Saved...");
+//     res.redirect(`/listings/${listing._id}`);
+// }));
 
-// REVIEW DELETE Route
-app.delete("/listings/:id/reviews/:reviewId", wrapAsync( async (req, res, next) => {
-    let { id, reviewId } = req.params;
+// // REVIEW DELETE Route
+// app.delete("/listings/:id/reviews/:reviewId", wrapAsync( async (req, res, next) => {
+    //     let { id, reviewId } = req.params;
+    
+    //     await Listing.findByIdAndUpdate(id, {pull: {reviews: reviewId}});   //Updating the reviews array of Listing
+    //     await Review.findByIdAndDelete(reviewId);
+    
+    //     console.log("Review Deleted...");
+//     res.redirect(`/listings/${id}`);
+// }));
 
-    await Listing.findByIdAndUpdate(id, {pull: {reviews: reviewId}});   //Updating the reviews array of Listing
-    await Review.findByIdAndDelete(reviewId);
-
-    console.log("Review Deleted...");
-    res.redirect(`/listings/${id}`);
-}));
-
+app.use("/listings/:id/reviews", reviews);
 
 
 
