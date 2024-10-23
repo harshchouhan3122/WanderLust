@@ -721,9 +721,21 @@
 
 
 
-## Phase 2 -> Part b    ()
+## Phase 2 -> Part b    (Express Routes -> Restructuring routes(modulor code) & Cookies (Send/Parse/Signed))
 
 ### What is Express Router?
+
+#### Express Router (https://expressjs.com/en/5x/api.html#router)
+    - It is a way to organize our Express applications such that our primary app.js file does not become bloated.
+    - const router = express.Router()   //creates new router
+
+    - A router object is an instance of middleware and routes. You can think of it as a “mini-application,” capable only of performing middleware and routing functions. Every Express application has a built-in app router.
+
+    - We can segregate the routes using Express Router
+        - https://expressjs.com/en/5x/api.html#router
+
+
+### Restructuring Listing Routes using Express Routes
     - Restructuring Listings (edit app.js)
         const listings = require("./routes/listing.js");
         app.use("/listings", listings)
@@ -749,8 +761,6 @@
         - Also create review.js inside routes and then move all the path request from app.js to review.js of reviews request
 
 
-### Using Express Router
-
 #### NOTE (merge params for review.js of routes)
     - https://expressjs.com/en/guide/routing.html
     - But if the parent route /birds has path parameters, it will not be accessible by default from the sub-routes. To make it accessible, you will need to pass the mergeParams option to the Router constructor reference.
@@ -758,5 +768,64 @@
 
     - app.use("/listings/:id/reviews", reviews);    // Its a parent route present in app.js, and it has :id parameter for which we have to use mergeParams
     - router.post("/", validReview, wrapAsync( async (req, res, next) => {}));    //Its a child route present in review.js
-    
+
     const router = express.Router({ mergeParams: true })
+
+
+
+### Cookies (Web Cookies)
+
+#### Introduction
+    - HTTP cookies/ Server Cookies/ Web Cookies are the small blocks of data created by a web server while a user is browsing a website and placed on the user's local pc or other device by the user's browser.
+    - They are stored in Name Value pair
+    - Inspect -> Application -> Cookies
+
+    - Used to remember the user preferences and for personalization
+
+    - We can use Cookies for the Authorization and Authentication purpose
+
+#### Sending Cookies
+    - Server send cookies to browser ((Name,Value) pair)
+
+    - in Express
+        app.get("/getCookies", (req, res) => {
+            res.cookie("greet","namaste");
+            res.cookie("made in","INDIA");
+            res.send("We have sent you some cookies");
+        });
+
+#### Cookie Parser (Cookie Reader)
+    - cookie-parser npm package (npm i cookie-parser)
+        - middleware use to parse cookies
+
+        - npm i cookie-parser
+        - const cookieParser = require("cookie-parser")
+        - app.use(cookieParser());
+        
+    - let { name = "anonymous" } = req.cookies;
+
+
+#### Signed Cookies (https://expressjs.com/en/4x/api.html#res.cookie)
+    - which is signed to avoid tempering of cookie (we can't use it to encode the cookie value)
+    - Two Step Process
+        - Send Signed Cookie
+        - Verify Signed Cookie
+
+##### Send Signed Cookie
+    app.use(cookieParser("secret_code"));  
+
+    app.get("/getSignedCookie", (req, res) => {
+        res.cookie("color", "red", {signed: true});
+        res.send("Done!");
+    });
+
+##### Verify Signed Cookie
+    app.get("/verify", (req, res) => {
+        res.send(req.signedCookies);    
+        // It will return an empty object if the cookie is tempered and it will return false in the value if the value of the cookie was changed
+    });
+
+#### We will use this Cookie topic in Authentication and Autherization Section
+
+
+## Phase 3  -> Part c   ()

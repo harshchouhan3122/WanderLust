@@ -14,7 +14,7 @@ const ejsMate = require("ejs-mate");
 
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-// const { listingSchema } = require("./schema.js");
+
 const { validateListing, validateReview } = require("./schema.js");
 
 const Review = require("./models/review.js");
@@ -29,6 +29,7 @@ app.use(express.static(path.join(__dirname, "/public")));       //for CSS stylin
 // for index.ejs 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
 
 
 // Import Listing Routes (Restructuring Request Paths)
@@ -57,10 +58,17 @@ app.get("/", (req, res)=>{
 });
 
 
+// Restructured Listings and reviews and then import there paths
 app.use("/listings", listings);
 app.use("/listings/:id/reviews", reviews);
 
 
+
+
+
+
+
+// ERROR HANDELING
 
 // If the request isn't match with the above paths
 app.all("*", (req, res, next) => {
