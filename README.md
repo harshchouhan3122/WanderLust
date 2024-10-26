@@ -723,7 +723,7 @@
 
 ## Phase 2 -> Part b    (Express Routes -> Restructuring routes(modulor code) & Cookies (Send/Parse/Signed))
 
-### What is Express Router?
+### What is Express Router? (Important)
 
 #### Express Router (https://expressjs.com/en/5x/api.html#router)
     - It is a way to organize our Express applications such that our primary app.js file does not become bloated.
@@ -828,4 +828,40 @@
 #### We will use this Cookie topic in Authentication and Autherization Section
 
 
+
 ## Phase 3  -> Part c   ()
+
+
+### What is State ? 
+    - Stateful Protocol 
+        It require to save the status and sessions information in server.
+        - ftp, bank login, secured
+
+    - Stateless Protocol 
+        It doesn't require server to retain the server information.
+        - http, not secured, no tracking
+
+### Express Sessions
+    - Express Sessions are needed to make http requests stateful
+    - An attempt to make our session stateful
+    - Functionality to add items in the cart before login, it can be done by sessions/ session id
+    - Express Session create a session id for the user along with some small amount of data
+    - Cookie will store session id into the browser and then other data can be extracted using the session id from the server
+    - Info saved in the cookie are not secure
+
+#### Classroom Folder for the Express Session in Delta batch Folder
+    - npm i express-session (https://www.npmjs.com/package/express-session) -> "secret" subtopic on page
+
+    - create /test route to check the session id cookie on browser
+
+### Exploring Express Sessions
+    - Create Express Session in server.js in Classroom folder of the course
+    app.get("/test", (req, res) => {
+        // res.send("Test Seccessful. ");
+        if(req.session.count){ req.session.count ++; } else{ req.session.count = 1;}
+        res.send(`You sent a request ${req.session.count} times`);
+    });
+    - In previous example we uses Local MemoryStore but for the production level we have to use other Storage(Compatible MemoryStore -> Topic on Website)
+
+### Storing and Using Session Information
+    - 
