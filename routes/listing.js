@@ -32,6 +32,7 @@ const checkListing = (req, res, next) => {
     }
 }
 
+
 // Create Route (Index Route    -> to show all the listings)
 router.get("/", wrapAsync( async (req, res, next) => {
     const allListings = await Listing.find({});
@@ -46,7 +47,6 @@ router.get("/", wrapAsync( async (req, res, next) => {
 // Open form for this route
 router.get("/new", (req, res) => {
     res.render("listings/new.ejs");
-
     console.log("Loading Form to Create new Listing...");
 });
 
@@ -59,7 +59,9 @@ router.post("/", checkListing, wrapAsync( async(req, res, next) => {
     await newListing.save();
 
     console.log("New Listing Added Successfully...");
+    req.flash("success", "New listing Added Successfully !");
     res.redirect("/listings");
+
     })
 );
 
@@ -102,7 +104,7 @@ router.put("/:id", checkListing, wrapAsync( async(req, res, next) => {
 router.delete("/:id", wrapAsync( async (req, res, next) => {
     let { id } = req.params;
     let result = await Listing.findByIdAndDelete(id);
-
+    
     console.log(`Listing Deleted... -> ${result.title},${result.location},${result.country}`);
     res.redirect('/listings');
 }));

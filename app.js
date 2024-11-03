@@ -31,6 +31,27 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 
+// sessions for auto login functionality
+const session = require("express-session");
+
+// connect-flash for alert messages
+const flash = require("connect-flash");
+const sessionOptions = {
+    secret: "secretCode",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        expires: Date.now() + (7 * 24 * 60 * 60 * 1000), //for 1 week , this function returns in millisec
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+    },
+};
+
+
+
+
+
+
 
 // Import Listing Routes (Restructuring Request Paths)
 const listings = require("./routes/listing.js");
@@ -52,11 +73,21 @@ main().then(()=>{
 })
 
 
+// use it before the using the routes
+app.use(session(sessionOptions));
+app.use(flash());
+
 // Root Directory
 app.get("/", (req, res)=>{
     res.send("Server is working....");
 });
 
+// middleware for flash messages
+app.use((req, res, next) => {
+    res.locals.successMsg = req.flash("success");
+    // res.locals.errorMsg = req.flash("error");
+    next();
+});
 
 // Restructured Listings and reviews and then import there paths
 app.use("/listings", listings);

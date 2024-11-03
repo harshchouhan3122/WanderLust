@@ -864,4 +864,150 @@
     - In previous example we uses Local MemoryStore but for the production level we have to use other Storage(Compatible MemoryStore -> Topic on Website)
 
 ### Storing and Using Session Information
-    - 
+    - Edit server.js
+    app.get("/register", (req, res) => {
+        // let { req.session.name = "Anonymous" } = req.query;  //Incorrect way to define
+        let { name = "Anonymous" } = req.query;
+        req.session.name = name;
+        // res.send(`${req.session.name}`);
+        res.redirect("/hello");
+    });
+    
+    
+    app.get("/hello", (req, res) => {
+        res.send(`Hello, ${req.session.name}`);
+    });
+
+### connect-flash (npm package -> https://www.npmjs.com/package/connect-flash)
+    - The flash is a special area of the session used for storing messages.
+    Messages are written to the flash and cleared after being displayed to the user.
+    - For single time message dispaly/ alert/ notification purpose
+    - The flash is typically used in combination with redirects, ensuring that the message is available to the next page that is to be rendered.
+
+    - Move to Classroom Folder (for Demo uses)
+        - npm i connect-flash
+        - edit server.js
+
+            app.get("/register", (req, res) => {
+                let { name = "Anonymous" } = req.query;
+                req.session.name = name;
+                req.flash("success", "User registered Successfully.");
+                res.redirect("/hello");
+            });
+    - used when the user registered for the first time (in a new session)
+    - used when the user login in new session
+
+        const session = require("express-session");
+        const flash = require("connect-flash");
+
+        const sessionoptions = {
+            secret: "secretCode",
+            saveUninitialized: true,
+            resave: false
+        };
+
+        app.use(session(sessionoptions));   //connect.sid
+        app.use(flash());
+
+        - Inside route request
+            //req.session.name = name;
+            req.flash("success", "User registered Successfully.");
+            res.redirect("/hello");
+
+### Using res.locals (https://expressjs.com/en/api.html#res.locals)
+    - Its a another better way of connect-flash (previous section)
+    - Use this property to set variables accessible in templates rendered with res.render. The variables set on res.locals are available within a single request-response cycle, and will not be shared between requests.
+    
+    - We can use these messages by creating local variables in server.js and then we can directly use these local variables on page.ejs where we can render it.
+
+    - edit server.js
+        app.get("/register", (req, res) => {
+            let { name = "Anonymous" } = req.query;
+            req.session.name = name;
+            if (name==="Anonymous"){
+                req.flash("error", "User not registered.");
+            } else {
+                req.flash("success", "User registered Successfully.");
+            };
+            res.redirect("/hello");
+        });
+
+        app.get("/hello", (req, res) => {
+            // using res.locals
+            res.locals.successMsg = req.flash("success");
+            res.locals.errorMsg = req.flash("error");
+            res.render("page.ejs", {name: req.session.name});
+        });
+    
+    - edit page.ejs
+        <p> <= successMsg %> </p>
+        <p> <= errorMsg %> </p>
+    
+#### Using res.locals (another way -> by using middleware)
+    app.use((req, res, next) => {
+        res.locals.successMsg = req.flash("success");
+        res.locals.errorMsg = req.flash("error");
+        next();
+    });
+
+    app.get("/hello", (req, res) => {
+        res.render("page.ejs", {name: req.session.name});
+    });
+
+
+### Implement Sessions in Project
+    - change directory to major project
+    - npm i express-session
+
+    - edit app.js
+        - require it in app.js
+            const session = require("express-session");
+        - define sessionOptions
+            const sessionOptions = {
+                secret: "secretCode",
+                resave: false,
+                saveUninitialized: true
+            };
+        - app.use(session(sessionOptions))
+
+    - check working of session from connect.sid from Inspect->Cookie->sessionconnect.sid 
+
+### Implement Project -> Adding Cookie Options
+    - https://expressjs.com/en/advanced/best-practice-security.html#set-cookie-security-options
+
+    - use expires and maxAge cookieOptions (explore more options)
+
+    - by default expires is set to null, means it doesn't have age so all the browser deletes this cookie when the browser is get closed.
+
+    - expires option is used for the autologin functionality purpose like insta and fb.
+
+    - httpOnly: true, for security purpose -> explore more about cross scripting Attacks
+
+    - edit app.js (we set it for one week)
+        const sessionOptions = {
+            secret: "secretCode",
+            resave: false,
+            saveUninitialized: true,
+            cookie: {
+                expires: Date.now() + (7 * 24 * 60 * 60 * 1000), //for 1 week , this function returns in millisec
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+                httpOnly: true,
+            },
+        };
+    
+    - Check its working -> Inspect -> application -> cookie -> expiry date
+        - 2024-11-13T08:12:47.703Z  (output like this)
+
+
+### Implement Flash in Project
+    - for single time alert type of messages
+    - npm i connect-flash
+
+    - edit app.js
+        - const flash = require("connect-flash");
+        - app.use(flash());
+            - NOTE: app.use() should be above the routes of listing or review
+    
+    - inside routes folder edit listing.js
+
+- Check the falsh and {name: object}
