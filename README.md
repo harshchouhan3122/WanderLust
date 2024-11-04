@@ -1009,5 +1009,3 @@
             - NOTE: app.use() should be above the routes of listing or review
     
     - inside routes folder edit listing.js
-
-- Check the falsh and {name: object}
