@@ -70,7 +70,15 @@ router.post("/", checkListing, wrapAsync( async(req, res, next) => {
 router.get("/:id", wrapAsync( async (req, res, next) => {
     let { id } = req.params;
     let listing = await Listing.findById(id).populate("reviews");
-    res.render("listings/show.ejs", {listing});
+
+    if (listing){
+        res.render("listings/show.ejs", {listing});
+
+    } else{
+        console.log("Listing not found...");
+        req.flash("error", "Requested Listing not found !");
+        res.redirect("/listings"); 
+    }
 
     console.log("Listing available...");
 }));
@@ -82,8 +90,15 @@ router.get("/:id/edit", wrapAsync( async (req, res, next) => {
     let listing = await Listing.findById(id);
     // console.log(listing);
 
-    console.log('Loading Form to Edit Listing......')
-    res.render("listings/edit.ejs", {listing});
+    if (listing){
+        console.log('Loading Form to Edit Listing......')
+        res.render("listings/edit.ejs", {listing});
+
+    } else{
+        console.log("Listing not found...");
+        req.flash("error", "Requested Listing not found !");
+        res.redirect("/listings"); 
+    }
 }));
 
 
@@ -95,6 +110,7 @@ router.put("/:id", checkListing, wrapAsync( async(req, res, next) => {
 
     console.log({ ...req.body.listing});
 
+    req.flash("success", "Listing Updated !");
     res.redirect(`/listings/${id}`);
     console.log("Listing Edited and Updated Successfully...");
 }));
@@ -106,6 +122,7 @@ router.delete("/:id", wrapAsync( async (req, res, next) => {
     let result = await Listing.findByIdAndDelete(id);
     
     console.log(`Listing Deleted... -> ${result.title},${result.location},${result.country}`);
+    req.flash("success", "Listing Deleted !")
     res.redirect('/listings');
 }));
 

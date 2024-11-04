@@ -835,7 +835,7 @@
 
 
 
-## Phase 3  -> Part c   ()
+## Phase 3  -> Part c   (Express Sessions, Storing Cookies (Autologin), Flashing Message Alerts)
 
 
 ### What is State ? 
@@ -1017,5 +1017,62 @@
     - inside routes folder edit listing.js
         req.flash("success", "New listing Added Successfully !");
     
-    - edit index.ejs of views folder
+    - edit index.ejs of views folder (next section -> update this change to boilerplate)
         <%= successMsg %>
+
+### Flash Success Includes  -> Success Partials
+    - Apply Bootstrap to success flash message
+    - Bootstrap -> alert (https://getbootstrap.com/docs/4.1/components/alerts/)
+    - create flash.ejs inside includes folder and include it before body in boilerplate.ejs
+        - conditon to check the successMsg && successMsg.length (in flash.ejs)
+        - since flash message is in Array form
+    - dimissing alert
+
+    - deleted msg as flash msg
+    - create flash msgs for reviews too
+
+    - edit app.js -> update middleware used for flashing msg
+        // middleware for flash messages
+        app.use((req, res, next) => {
+            res.locals.successMsg = req.flash("success");
+            res.locals.errorMsg = req.flash("error");
+            next();
+        });
+
+    - edit listing.js
+        // Listing EDIT route
+        router.get("/:id/edit", wrapAsync( async (req, res, next) => {
+            let {id} = req.params;
+            let listing = await Listing.findById(id);
+            // console.log(listing);
+
+            if (listing){
+                console.log('Loading Form to Edit Listing......')
+                res.render("listings/edit.ejs", {listing});
+
+            } else{
+                console.log("Listing not found...");
+                req.flash("error", "Requested Listing not found !");
+                res.redirect("/listings"); 
+            }
+        }));
+    
+    - edit flash.ejs
+        <% if (successMsg && successMsg.length) { %>
+            <div class="alert alert-success col-6 offset-3 alert-dismissible fade show" role="alert">
+                <%= successMsg %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"> </button>
+            </div>
+        <% }
+
+### Flash Failure Includes  -> Failure Partials
+    - Display flash message of failure key
+    - Handel when the listing not found
+        - edit flash.ejs -> add errorMsg
+            <% } else if (errorMsg && errorMsg.length) { %>
+                <div class="alert alert-danger col-6 offset-3 alert-dismissible fade show" role="alert">
+                    <%= errorMsg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"> </button>
+                </div>
+            <% } %>
+        - edit listing.js -> post route and edit route
