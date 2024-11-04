@@ -1,5 +1,6 @@
 # Major Project - Airbnb Website
 
+    - Download nodejs first -> https://nodejs.org/en
     - cmd to project folder
     - nodemon app.js -> to start the server
     - start mongosh
@@ -11,11 +12,16 @@
 
 ## Phase 1 -> Part a (Database Setup and CRUD APIs)
 
+### MongoDB Setup if not available
+    - https://www.youtube.com/watch?v=h2x6BmUi5zQ (VIDEO)
+    - https://www.mongodb.com/try/download/community (MONGODB)  -> msi
+    - https://www.mongodb.com/try/download/shell (MONGO SHELL) -> zip
+        - then from bin folder after extraction downloaded folder, pin to start the mongosh application
+
 ### Installation
-    - npm init
-    - npm i express
-    - npm i ejs
-    - npm i mongoose
+    - npm install -> it will install all the dependencies mentioned in package.json
+    - npm init  -> run index.js of init folder to initialized dummy data
+    - npm i express ejs mongoose
     - code app.js
 
 ### Basic Setup 
@@ -27,7 +33,7 @@
         - Start services of Mongoose (mongosh) first
         - edit app.js with MONGO_URL and create main() function for db connection
 
-    - Basic DB Commands
+    - Basic DB Commands on mongosh
         - show dbs
         - use wanderlust, use test
         - show collections (Show Tables)
@@ -972,7 +978,7 @@
 
     - check working of session from connect.sid from Inspect->Cookie->sessionconnect.sid 
 
-### Implement Project -> Adding Cookie Options
+### Implement Project -> Adding Cookie Options -> cookie expiry for autologin
     - https://expressjs.com/en/advanced/best-practice-security.html#set-cookie-security-options
 
     - use expires and maxAge cookieOptions (explore more options)
@@ -1006,6 +1012,10 @@
     - edit app.js
         - const flash = require("connect-flash");
         - app.use(flash());
-            - NOTE: app.use() should be above the routes of listing or review
+            - NOTE: app.use() should be above the routes of listing or review becuase our routes are going to use flash messages
     
     - inside routes folder edit listing.js
+        req.flash("success", "New listing Added Successfully !");
+    
+    - edit index.ejs of views folder
+        <%= successMsg %>

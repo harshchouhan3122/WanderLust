@@ -101,13 +101,13 @@ app.use("/listings/:id/reviews", reviews);
 
 // ERROR HANDELING
 
-// If the request isn't match with the above paths
+// If the request isn't match with the above paths/ routes
 app.all("*", (req, res, next) => {
     next(new ExpressError(404, "Page Not Found !"));
 });
 
 
-// Custom Error Handler
+// Custom Error Handler after all the routes
 app.use((err, req, res, next) => {
     let { statusCode = 500, message="Something Went Wrong!!" } = err;
 
@@ -115,6 +115,8 @@ app.use((err, req, res, next) => {
     // console.log(`ERROR OCCURED: ${err.stack}`);
     res.status(statusCode).render("error.ejs", { err });
 });
+
+
 
 
 // Start Server
