@@ -835,7 +835,7 @@
 
 
 
-## Phase 3  -> Part c   (Express Sessions, Storing Cookies (Autologin), Flashing Message Alerts)
+## Phase 2  -> Part c   (Express Sessions, Storing Cookies (Autologin), Flashing Message Alerts)
 
 
 ### What is State ? 
@@ -1076,3 +1076,188 @@
                 </div>
             <% } %>
         - edit listing.js -> post route and edit route
+
+
+
+
+
+## Phase 2  -> Part d   ()  -> Most important
+    - Authentication (Concept), User Model in DB, User Login
+
+### Authentication vs Autherization
+    - Authentication 
+        - It is the process of verifying who someone is
+        - Sign up/ Login
+    - Autherization 
+        - It is the process of verifying what specific applications, files, and data a user has to access
+        - Accessibility of data, services
+
+###  How are passswords stored ?
+    - Password are store in their HASHED form.
+    - Hashing Function
+        - It converts normal string to unrecognizable string.
+        - If one input hashing function will always convert it into same output.
+            - abc   -> 14ed54s
+            - It will convert abc to 14ed54s everytime (example)
+    - Server compaires the password in the hashed form during login
+
+    - Some Important Characteristics of Hashing Function
+
+#### What is Hashing ? 
+    - For every input, there is a fixed output length.
+        - abc           -> hashing func     -> string of 50 character
+        - gheifhk145    -> hashing func     -> string of 50 character
+    - There are one-way functions (like .abs(), % operator), we can't get input from the output
+    - For a different input, there is a different output but of same length
+    - Small changes in input should bring large changes in output
+    - Some Important Hashing function/ Algorithms (https://passwordsgenerator.net/sha256-hash-generator/)
+        - SHA256 (Fast but not good in practical way)
+        - MD5
+        - CRC
+        - bcrypt
+        - we prefer slow function to avoid brutforce attack
+    
+#### What is Salting ?
+    - Password salting is a technique to protect passwords stored in databases by adding a string of 32 or more characters and then hashing them.
+    - Every company append or insert some string to their user's password like we can use "%?##" in every user's passwords
+        - abc   -> abc%?##      -> hashing func -> hashed form pass
+        - hello -> hello%?##    -> hashing func -> hashed form pass
+    - Some exta concept to retrieve passwords from hashed form
+        - reverse lookup table (to prevent it, we use salting)
+    
+    - Nowadays, we have some builtin tools of NodeJS to store passwords , no need to code from scratch to hashed form or salting etc
+        - PASSPORT is one those tools, which we are going to implement in our project
+    
+### Passport -> library of NodeJS for Salting and Hashing (IMORTANT)
+    -   Passport is authentication middleware for Node.js. Extremely flexible and modular, 
+        Passport can be unobtrusively dropped in to any Express-based web application. 
+        A comprehensive set of strategies support authentication using a username and password, Facebook, Twitter, and more.
+    - Documentation -> (https://www.passportjs.org/)
+    - Different Strategies for Authentication (https://www.passportjs.org/packages/)
+
+    - Installation for PASSPORT library (https://www.npmjs.com/package/passport)
+        - npm i passport
+        - npm i passport-local
+        - npm i passport-local-mongoose (for mongoDB database)
+
+### User Model (user.js)
+    - user: username, password, email
+    - Documentation -> Read the Usage heading of this doc (https://www.npmjs.com/package/passport-local-mongoose)
+        salt field to store the username, the hashed password and the salt value.
+
+    - Create user.js inside models folder
+        - You're free to define your User how you like. Passport-Local Mongoose will add a username, hash and 
+        - edit user.js
+            - we are using plugin to use auto functionality of hashing and salting of username and password, and some functions/methods to change and update passwords (Read Documentation -> methods)
+
+            const mongoose = require("mongoose");
+            const Schema = mongoose.Schema;
+            const passportLocalMongoose = require("passport-local-mongoose");
+
+            const userSchema = new Schema({
+                email: {
+                    type: String,
+                    required: true,
+                },
+            });
+
+            userSchema.plugin(passportLocalMongoose);
+
+            module.exports = mongoose.model("User", userSchema);
+
+
+### Configuring Strategy
+
+    - passport strategy requires sessions so that it doesn't need login in the same session again n again
+        - use passport below the session
+
+    - edit app.js (https://www.npmjs.com/package/passport-local-mongoose)
+        const passport = require("passport");
+        const LocalStrategy = require("passport-local");
+        const User = require("./models/user.js");
+
+        app.use(passport.initialize());     //middleware that initialize passport
+
+        app.use(passport.session());            // middleware that detects the same user in different requests/pages through the same session
+
+        passport.use(new LocalStrategy(User.authenticate()));
+    
+    - Serializing User -> Storing User info after login from session
+    - Deserializing User -> Removing User info after logout from session
+
+    -  We used library for authentication otherwise we can also implement it from scratch (hashing, salting)
+
+
+### Demo User (https://www.npmjs.com/package/passport-local-mongoose#main-options)
+    - edit app.js
+        // Demo User
+        app.get("/demoUser", async(req, res) => {
+            let fakeUser = new User({
+                email: "fakeUser@gmail.com",
+                username: "user1"
+            });
+
+
+            let registeredUser = await User.register(fakeUser, "password123");     //to register new user, also checks the username is unique or not
+            res.send(registeredUser);
+        });
+
+    - then check the registered user output at http://localhost:3000/demoUser
+
+    - default algo for hashing : pbkdf2 digest algorithm in our project with 25000 iterations
+
+
+### SignUp User
+
+#### SignUp GET request
+    - to open the signup form
+
+    - create user.js new route inside routes folder
+        const express = require("express");
+        const router = express.Router();
+
+        const ExpressError = require("../utils/ExpressError.js");
+        const wrapAsync = require("../utils/wrapAsync.js");
+
+        // To Open the form -> SignUp GET request
+        router.get("/signup", (req, res, next) => {
+            res.render("./users/signup.ejs");
+        });
+
+        module.exports = router;
+
+    - create users folder inside views folder, then create signup.ejs inside users folder
+        - create a form having username , email, password input fields (like new.ejs form)
+
+
+
+#### SignUp POST request 
+    - to register the user in Database
+
+    - extra
+        -> use wrapAsync
+        - refer listing.js of routes
+        - checkUser iddleware implement with expressError
+
+    - edit user.js (of routes folder) 
+    - move demo user part from app.js to user.js in POST route
+        let { username, email, password } = req.body;
+
+        const newUser = new User({email, username});
+    
+        let registeredUser = await User.register(newUser, password);
+    
+        req.flash("success", "Welcome to WanderLust!");
+    
+        console.log(`User Registered Successfully! -> ${registeredUser.username}, ${registeredUser.email}`);
+        res.redirect("/listings");
+    
+    - also use try catch block to handel error
+
+
+### Login User
+
+
+
+
+

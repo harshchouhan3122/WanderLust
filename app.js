@@ -36,6 +36,7 @@ const session = require("express-session");
 
 // connect-flash for alert messages
 const flash = require("connect-flash");
+
 const sessionOptions = {
     secret: "secretCode",
     resave: false,
@@ -47,15 +48,17 @@ const sessionOptions = {
     },
 };
 
-
-
-
+// Authentication using Passport
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user.js");
 
 
 
 // Import Listing Routes (Restructuring Request Paths)
-const listings = require("./routes/listing.js");
-const reviews = require("./routes/review.js");
+const listingRouter = require("./routes/listing.js");
+const reviewRouter = require("./routes/review.js");
+const userRouter = require("./routes/user.js");
 
 
 // Connect Databse
@@ -73,14 +76,29 @@ main().then(()=>{
 })
 
 
-// use it before the using the routes
-app.use(session(sessionOptions));
-app.use(flash());
+
 
 // Root Directory
 app.get("/", (req, res)=>{
     res.send("Server is working....");
 });
+
+
+
+// use it before the using the routes
+app.use(session(sessionOptions));
+app.use(flash());
+
+
+// passport's authentication middlewares
+app.use(passport.initialize());         // middleware that initialize passport
+app.use(passport.session());            // middleware that detects the same user in different requests/pages through the same session
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
 
 // middleware for flash messages
 app.use((req, res, next) => {
@@ -89,13 +107,26 @@ app.use((req, res, next) => {
     next();
 });
 
+
+// // Demo User
+// app.get("/demoUser", async(req, res) => {
+//     let fakeUser = new User({
+//         email: "fakeUser@gmail.com",
+//         username: "user1"
+//     });
+
+//     let registeredUser = await User.register(fakeUser, "password123");     //to register new user, also checks the username is unique or not
+//     res.send(registeredUser);
+// });
+
+
+
+
+
 // Restructured Listings and reviews and then import there paths
-app.use("/listings", listings);
-app.use("/listings/:id/reviews", reviews);
-
-
-
-
+app.use("/listings", listingRouter);
+app.use("/listings/:id/reviews", reviewRouter);
+app.use("/", userRouter);
 
 
 
