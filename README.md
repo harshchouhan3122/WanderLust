@@ -1081,7 +1081,7 @@
 
 
 
-## Phase 2  -> Part d   ()  -> Most important
+## Phase 2  -> Part d   (User model, Passport Library, Authentication (Salting, Hashing), Login/Signup form and routes)  -> Most important
     - Authentication (Concept), User Model in DB, User Login
 
 ### Authentication vs Autherization
