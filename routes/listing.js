@@ -6,6 +6,7 @@ const wrapAsync = require("../utils/wrapAsync.js");
 
 const Listing = require("../models/listing.js");
 const { validateListing } = require("../schema.js");
+const { isLoggedIn } = require("../middleware.js");
 
 
 // app.use(express.urlencoded({extended:true}))                    // to get the parameters from the query String 
@@ -45,7 +46,7 @@ router.get("/", wrapAsync( async (req, res, next) => {
 
 // CREATE ROUTE (new and create)  -> Always keep it above the READ route
 // Open form for this route
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
     res.render("listings/new.ejs");
     console.log("Loading Form to Create new Listing...");
 });
@@ -85,7 +86,7 @@ router.get("/:id", wrapAsync( async (req, res, next) => {
 
 
 // Listing EDIT route
-router.get("/:id/edit", wrapAsync( async (req, res, next) => {
+router.get("/:id/edit", isLoggedIn, wrapAsync( async (req, res, next) => {
     let {id} = req.params;
     let listing = await Listing.findById(id);
     // console.log(listing);
@@ -103,7 +104,7 @@ router.get("/:id/edit", wrapAsync( async (req, res, next) => {
 
 
 // Listing UPDATE Route
-router.put("/:id", checkListing, wrapAsync( async(req, res, next) => {
+router.put("/:id", isLoggedIn, checkListing, wrapAsync( async(req, res, next) => {
 
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 
@@ -117,7 +118,7 @@ router.put("/:id", checkListing, wrapAsync( async(req, res, next) => {
 
 
 // Listing DELETE Route
-router.delete("/:id", wrapAsync( async (req, res, next) => {
+router.delete("/:id", isLoggedIn, wrapAsync( async (req, res, next) => {
     let { id } = req.params;
     let result = await Listing.findByIdAndDelete(id);
     

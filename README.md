@@ -1296,8 +1296,39 @@
             console.log("User Logged in Successfully!");
             res.redirect("/listings");
         });
-    - passport.authenticate() is a middleware used to authenticate the user
+    - passport.authenticated() is a middleware used to authenticate the user
 
 
 
 
+
+
+## Phase 2  -> Part e   ()  -> IMPORTANT
+
+### Connecting Login Routes
+    - connecting Login Routes to app.js
+
+#### How to check if User is Logged in? (IMPORTANT)
+    - edit listing.js
+        - req.isAuthenticated()     //passportMethod inbuilt method
+        - this method will use the user info saved in session and then check weather the user is logged in or not
+
+    - create isLoggedIn logic as middleware because we have to check the isLoggedIn middleware many times
+    - create middleware.js in root directory to store middlewares and require it in app.js 
+        - since our app.js has many middlewares there
+
+        module.exports.isLoggedIn = ((req, res, next) => {
+            console.log(`User details: ${req.user}`);
+            if (!req.isAuthenticated()) {
+                req.flash("error","User must be Logged in.");
+                return res.redirect("/login");
+            }
+            next();
+        });
+    
+    - edit listing.js
+        - use isLoggedIn middleware in every route
+    - edit review.js
+        - use isLoggedIn middleware in every route
+    
+    

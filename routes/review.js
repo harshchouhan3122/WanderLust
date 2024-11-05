@@ -7,6 +7,7 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const Listing = require("../models/listing.js");
 const Review = require("../models/review.js");
 const { validateReview } = require("../schema.js");
+const { isLoggedIn } = require("../middleware.js");
 
 
 
@@ -24,7 +25,7 @@ const validReview = (req,res,next) => {
 
 // REVIEWS Route form new Review
 // router.post("/listings/:id/reviews", validReview, wrapAsync( async (req, res, next) => {
-router.post("/", validReview, wrapAsync( async (req, res, next) => {
+router.post("/", isLoggedIn, validReview, wrapAsync( async (req, res, next) => {
     
     let listing = await Listing.findById(req.params.id);
     // console.log(req.body.review);
@@ -42,7 +43,7 @@ router.post("/", validReview, wrapAsync( async (req, res, next) => {
 }));
 
 // REVIEW DELETE Route
-router.delete("/:reviewId", wrapAsync( async (req, res, next) => {
+router.delete("/:reviewId", isLoggedIn, wrapAsync( async (req, res, next) => {
     // console.log("Restructured");
     let { id, reviewId } = req.params;
 
