@@ -1,9 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user.js");
+const passport = require("passport");
 
 const ExpressError = require("../utils/ExpressError.js");
 const wrapAsync = require("../utils/wrapAsync.js");
+
+
+// SIGNUP ROUTES
 
 // To Open the form -> SignUp GET request
 router.get("/signup", (req, res, next) => {
@@ -35,7 +39,18 @@ router.post("/signup", wrapAsync( async (req, res, next) => {
 }));
 
 
+// LOGIN ROUTES
 
+// GET -> To open the Login form
+router.get("/login", (req, res, next) => {
+    res.render("./users/login.ejs");
+});
 
+// POST -> To authenticate the user through login -> passport.authenticate() is middleware used for authentication
+router.post("/login", passport.authenticate("local", { failureRedirect: "/login", failureFlash: true }),async(req, res) => {
+    req.flash("success", "Welcome back to WanderLust !");
+    console.log("User Logged in Successfully!");
+    res.redirect("/listings");
+});
 
 module.exports = router;

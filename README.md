@@ -1252,11 +1252,51 @@
         console.log(`User Registered Successfully! -> ${registeredUser.username}, ${registeredUser.email}`);
         res.redirect("/listings");
     
-    - also use try catch block to handel error
+    - also use try catch block to handel error in user.js
+
+        router.post("/signup", wrapAsync( async (req, res, next) => {
+            try{
+                let { username, email, password } = req.body;
+                const newUser = new User({email, username});
+                let registeredUser = await User.register(newUser, password);
+        
+                req.flash("success", "Welcome to WanderLust!");
+                console.log(`User Registered Successfully! -> ${registeredUser.username}, ${registeredUser.email}`);
+                res.redirect("/listings");
+
+            } catch (e) {
+                req.flash("error", e.message);
+                console.log(`Error -> ${e.message}.`);
+                res.redirect("/signup");
+            }
+        }));
 
 
 ### Login User
+    - create GET and POST route as Signup in user.js
+        - require passport in user.js
+    - create login.ejs in views inside users
+    - passport.authenticate()   -> https://www.npmjs.com/package/passport-local-mongoose#asyncawait
+        this middleware will authenticate user
+    - passport.authenticate("local", { failureRedirect: '/login', failureFlash: true })
 
+#### GET /login
+    - to open the Login Form
+    - create login.ejs first
+    - edit user.js
+        router.get("/login", (req, res, next) => {
+            res.render("./users/login.ejs");
+        });
+
+#### POST /login
+    - to get authenticate after submitting form
+    - edit user.js
+        router.post("/login", passport.authenticate("local", { failureRedirect: "/login", failureFlash: true }),async(req, res) => {
+            req.flash("success", "Welcome back to WanderLust !");
+            console.log("User Logged in Successfully!");
+            res.redirect("/listings");
+        });
+    - passport.authenticate() is a middleware used to authenticate the user
 
 
 
