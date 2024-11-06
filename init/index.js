@@ -15,6 +15,8 @@ main().then(()=>console.log("Connected to DB....")).catch((err)=>console.log(err
 const initDB = async() => {
     // Delete the existing DB
     await Listing.deleteMany({});
+    // Create Owner of the listing
+    initData.data = initData.data.map((obj) => ({...obj, owner: "672b6e4b66a06a8590751b03"}));
     // Create the DB of data.js
     await Listing.insertMany(initData.data);
     
