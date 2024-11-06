@@ -1376,4 +1376,50 @@
 ### Login after Signup
     - current user is not able to login directly after signup 
     - for this we can use .login() of passport -> (https://www.passportjs.org/concepts/authentication/login/)
+
+        // Auto Login after Signup -> user.js
+        req.login(registeredUser, (err) => {
+            if (err) {
+                return next(err);
+            };
+            
+            req.flash("success", "Welcome to WanderLust!");
+            //console.log(`User Registered Successfully! -> ${registeredUser.username}, ${registeredUser.email}`);
+            res.redirect("/listings");
+        });
+
+### post-login page
+    - we need login before some crud changes, so redirect user to the same page where he was before login
+        - when we click add listing it redirects to login page and then after login it redirects all listings not the new listing page
+
+    - try to explore the req object (console.log(req))
+        - req.path ->  relative path
+        - req.originalURL -> complete request path
+
+    - so redirect to originalURL after login/ authenticate user, save this URL only when the user is not Logged in
+
+    (NOTE) - req.session.redirectURL = req.originalURL; //store it in session object in middleware.js but passport resets the session object after login , so store this value with the help of locals variable by creating another middleware in middleware.js
+
+    - also we face problem when we directly login, because at thi time isLoggedIn not called and redirecURL is undefined.
+
+    - edit middleware.js
+        module.exports.saveRedirectUrl = (req, res, next) => {
+            // console.log("saveRedirect middleware called...");
+            if (req.session.redirectUrl) {
+                res.locals.redirectUrl = req.session.redirectUrl;
+                // console.log("locally URL saved...");
+            }
+            next();
+        };
     
+    - edit user.js
+        router.post("/login", saveRedirectUrl , passport.authenticate("local", { failureRedirect: "/login", failureFlash: true }), 
+        async(req, res) => {
+            req.flash("success", "Welcome back to WanderLust !");
+            console.log("User Logged in Successfully!");
+            //console.log(res.locals.redirectUrl);
+            let redirectUrl = res.locals.redirectUrl || "/listings";
+            res.redirect(redirectUrl);
+            }
+        );
+

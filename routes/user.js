@@ -6,7 +6,7 @@ const passport = require("passport");
 const ExpressError = require("../utils/ExpressError.js");
 const wrapAsync = require("../utils/wrapAsync.js");
 
-// const { isLoggedIn } = require("../middleware.js");
+const { saveRedirectUrl } = require("../middleware.js");
 
 
 // SIGNUP ROUTES
@@ -31,7 +31,7 @@ router.post("/signup", wrapAsync( async (req, res, next) => {
             if (err) {
                 return next(err);
             };
-            
+
             req.flash("success", "Welcome to WanderLust!");
             // console.log(`User Registered Successfully! -> ${registeredUser.username}, ${registeredUser.email}, ${registeredUser.hash}`); //hash is a hashed password
             console.log(`User Registered Successfully! -> ${registeredUser.username}, ${registeredUser.email}`);
@@ -54,13 +54,35 @@ router.get("/login", (req, res, next) => {
     res.render("./users/login.ejs");
 });
 
-// POST -> To authenticate the user through login -> passport.authenticate() is middleware used for authentication
-router.post("/login", passport.authenticate("local", { failureRedirect: "/login", failureFlash: true }),async(req, res) => {
+// // POST -> To authenticate the user through login -> passport.authenticate() is middleware used for authentication
+router.post("/login", saveRedirectUrl , passport.authenticate("local", { failureRedirect: "/login", failureFlash: true }), 
+async(req, res) => {
     req.flash("success", "Welcome back to WanderLust !");
     console.log("User Logged in Successfully!");
-    res.redirect("/listings");
-});
+    // res.redirect("/listings");
 
+    // let redirectUrl = req.locals.redirectUrl || "/listings";
+    // console.log(res.session.redirectUrl);
+    console.log(res.locals.redirectUrl);
+    let redirectUrl = res.locals.redirectUrl || "/listings";
+    res.redirect(redirectUrl);
+    }
+);
+
+// router.post("/login", (req, res, next) => {
+//     // Call saveRedirectUrl first
+//     saveRedirectUrl(req, res, () => {
+//         // Now call passport.authenticate
+//         passport.authenticate("local", { failureRedirect: "/login", failureFlash: true })(req, res, next);
+//     });
+// }, async (req, res) => {
+//     req.flash("success", "Welcome back to WanderLust!");
+//     console.log("User Logged in Successfully!");
+
+//     // Use the saved redirect URL or default to "/listings"
+//     let redirectUrl = res.locals.redirectUrl || "/listings";
+//     res.redirect(redirectUrl);
+// });
 
 // Logout User (IMPORTANT)  - GET
 router.get("/logout", (req, res, next) => {
