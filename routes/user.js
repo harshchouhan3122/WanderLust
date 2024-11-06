@@ -6,6 +6,8 @@ const passport = require("passport");
 const ExpressError = require("../utils/ExpressError.js");
 const wrapAsync = require("../utils/wrapAsync.js");
 
+// const { isLoggedIn } = require("../middleware.js");
+
 
 // SIGNUP ROUTES
 
@@ -24,11 +26,17 @@ router.post("/signup", wrapAsync( async (req, res, next) => {
         let registeredUser = await User.register(newUser, password);     //to register new user, also checks the username is unique or not
         // res.send(registeredUser);
     
-        req.flash("success", "Welcome to WanderLust!");
-    
-        // console.log(`User Registered Successfully! -> ${registeredUser.username}, ${registeredUser.email}, ${registeredUser.hash}`); //hash is a hashed password
-        console.log(`User Registered Successfully! -> ${registeredUser.username}, ${registeredUser.email}`);
-        res.redirect("/listings");
+        // Auto Login after Signup
+        req.login(registeredUser, (err) => {
+            if (err) {
+                return next(err);
+            };
+            
+            req.flash("success", "Welcome to WanderLust!");
+            // console.log(`User Registered Successfully! -> ${registeredUser.username}, ${registeredUser.email}, ${registeredUser.hash}`); //hash is a hashed password
+            console.log(`User Registered Successfully! -> ${registeredUser.username}, ${registeredUser.email}`);
+            res.redirect("/listings");
+        });
 
     } catch (e) {
         req.flash("error", e.message);
@@ -51,6 +59,20 @@ router.post("/login", passport.authenticate("local", { failureRedirect: "/login"
     req.flash("success", "Welcome back to WanderLust !");
     console.log("User Logged in Successfully!");
     res.redirect("/listings");
+});
+
+
+// Logout User (IMPORTANT)  - GET
+router.get("/logout", (req, res, next) => {
+    req.logout((err) => {
+        if (err) {
+            return next(err);
+        }
+        
+        req.flash("success", "You are Logged out!");
+        // console.log(` ${req.user.username} User Logged Out");
+        res.redirect("/listings");
+    });
 });
 
 module.exports = router;

@@ -25,6 +25,20 @@ body {
     color: #222222 !important;          /*important is used to override the bootstrap styling*/
 }
 
+.nav-btn{
+    /* background-color: #fe424d !important; */
+    color: #222222 !important;
+    border: none !important;
+    font-weight: bold !important;
+}
+
+.nav-btn:hover{
+    background-color: #fe424d !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold !important;
+}
+
 
 /*   FOOTER   */
 
@@ -160,3 +174,5 @@ body {
 .reviewCard{
     padding: 0.5rem 0.5rem 0.5rem 0.5rem !important;
 }
+
+

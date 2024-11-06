@@ -1306,9 +1306,11 @@
 ## Phase 2  -> Part e   ()  -> IMPORTANT
 
 ### Connecting Login Routes
-    - connecting Login Routes to app.js
+    - connecting isLoggedIn middleware to listing.js and review.js
 
 #### How to check if User is Logged in? (IMPORTANT)
+    - user can make changes only when he/she is logged in (Like Instagram)
+
     - edit listing.js
         - req.isAuthenticated()     //passportMethod inbuilt method
         - this method will use the user info saved in session and then check weather the user is logged in or not
@@ -1331,4 +1333,47 @@
     - edit review.js
         - use isLoggedIn middleware in every route
     
+### Logout User (IMPORTANT)
+    - req.logout()  //passport-method
+    - use it in user.js
+
+        router.get("/logout", (req, res, next) => {
+            req.logout((err) => {
+                if (err) {
+                    return next(err);
+                }
+
+                req.flash("success", "You are Logged out!");
+                // console.log(` ${req.user.username} User Logged Out");
+                res.redirect("/listings");
+            });
+        });
+
+    - before logout check first that the user is logged in or not 
+
+#### Add Styling
+    - Styling to Logout Functionality (Button)
+    - edit navbar.ejs in includes folder
+
+    - req.user === undefined    -> means no user logged in
+        - use it to toggle log out and log in button with signup button
+
+        - we can't use req.user directly in ejs file, but we cn access local variable from ejs file
+        - create res.locals.currentUser = req.user;(app.js) and then access it from navbar.ejs
+
+            <div class="navbar-nav ms-auto">
+              <% if (!currentUser) { %>
+                <a class="nav-link btn btn-dark nav-btn" href="/signup">Sign up</a>
+                <a class="nav-link btn btn-dark nav-btn" href="/login">Log in </a>
+              <% } else { %>
+                <a class="nav-link btn btn-dark nav-btn" href="/logout">Log out</a>
+              <% } %>
+            </div>
+
+        - edit app.js
+            res.locals.currentUser = req.user;
+
+### Login after Signup
+    - current user is not able to login directly after signup 
+    - for this we can use .login() of passport -> (https://www.passportjs.org/concepts/authentication/login/)
     
