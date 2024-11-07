@@ -10,7 +10,7 @@
     - NOTE: Stop the server before installing any additional package of npm
 
 
-## Phase 1 -> Part a (Database Setup and CRUD APIs)
+## Phase 1  -> Part a (Database Setup and CRUD APIs)
 
 ### MongoDB Setup if not available
     - https://www.youtube.com/watch?v=h2x6BmUi5zQ (VIDEO)
@@ -166,7 +166,7 @@
 
 
 
-## Phase 1 -> Part b (Styling)
+## Phase 1  -> Part b (Styling)
 
 ### Creating BoilerPlate
     - EJS mate
@@ -262,7 +262,7 @@
 
 
 
-## Phase 1 -> Part c (Error Handeling)
+## Phase 1  -> Part c (Error Handeling)
 
 ### Client Side Validation (Form)   -> new.ejs      -> Frontend Form Validations
     #### Form Validation
@@ -512,7 +512,7 @@
 
 
 
-## Phase 2 -> Part a    (Creating Review Section)
+## Phase 2  -> Part a    (Creating Review Section)
 
 ### Handeling Deletion
     - Cascading of Deletion
@@ -727,7 +727,7 @@
 
 
 
-## Phase 2 -> Part b    (Express Routes -> Restructuring routes(modulor code) & Cookies (Send/Parse/Signed))
+## Phase 2  -> Part b    (Express Routes -> Restructuring routes(modulor code) & Cookies (Send/Parse/Signed))
 
 ### What is Express Router? (Important)
 
