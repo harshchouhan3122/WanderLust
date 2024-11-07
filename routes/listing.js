@@ -6,7 +6,7 @@ const wrapAsync = require("../utils/wrapAsync.js");
 
 const Listing = require("../models/listing.js");
 const { validateListing } = require("../schema.js");
-const { isLoggedIn } = require("../middleware.js");
+const { isLoggedIn, isOwner } = require("../middleware.js");
 
 
 // app.use(express.urlencoded({extended:true}))                    // to get the parameters from the query String 
@@ -89,7 +89,7 @@ router.get("/:id", wrapAsync( async (req, res, next) => {
 
 
 // Listing EDIT route
-router.get("/:id/edit", isLoggedIn, wrapAsync( async (req, res, next) => {
+router.get("/:id/edit", isLoggedIn, isOwner ,wrapAsync( async (req, res, next) => {
     let {id} = req.params;
     let listing = await Listing.findById(id);
     // console.log(listing);
@@ -107,16 +107,18 @@ router.get("/:id/edit", isLoggedIn, wrapAsync( async (req, res, next) => {
 
 
 // Listing UPDATE Route
-router.put("/:id", isLoggedIn, checkListing, wrapAsync( async(req, res, next) => {
+router.put("/:id", isLoggedIn, isOwner, checkListing, wrapAsync( async(req, res, next) => {
 
     let { id } = req.params;
-    let listing = await Listing.findById(id);
 
-    if (!listing.owner._id.equals(req.user._id)){
-        req.flash("error", "You don't have permission to edit this listing.");
-        console.log("Unautherized Persion trying to Edit the Listing.")
-        return res.redirect(`/listings/${id}`); 
-    } 
+    // We created middleware isOwner for below commented code
+    // let listing = await Listing.findById(id);
+    // if (!listing.owner._id.equals(req.user._id)){
+    //     req.flash("error", "You don't have permission to edit this listing.");
+    //     console.log("Unautherized Persion trying to Edit the Listing.")
+    //     return res.redirect(`/listings/${id}`); 
+    // } 
+    
     await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 
 
     // console.log({ ...req.body.listing});
@@ -128,7 +130,7 @@ router.put("/:id", isLoggedIn, checkListing, wrapAsync( async(req, res, next) =>
 
 
 // Listing DELETE Route
-router.delete("/:id", isLoggedIn, wrapAsync( async (req, res, next) => {
+router.delete("/:id", isLoggedIn, isOwner, wrapAsync( async (req, res, next) => {
     let { id } = req.params;
     let result = await Listing.findByIdAndDelete(id);
     

@@ -1,3 +1,5 @@
+const Listing = require("./models/listing");
+
 
 module.exports.isLoggedIn = (req, res, next) => {
     // console.log(`User (currently logged in) details: ${req.user}`);
@@ -20,6 +22,15 @@ module.exports.saveRedirectUrl = (req, res, next) => {
     next();
 };
 
-module.exports.isOwner = (req, res, next) => {
-    
+module.exports.isOwner = async (req, res, next) => {
+    let { id } = req.params;
+    let listing = await Listing.findById(id);
+
+    if (!listing.owner._id.equals(req.user._id)){
+        req.flash("error", "You are not the owner of this listing.");
+        console.log("Unautherized Persion trying to Edit the Listing.")
+        return res.redirect(`/listings/${id}`); 
+    } 
+
+    next();
 };

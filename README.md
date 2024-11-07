@@ -1485,6 +1485,20 @@
     - CREATE MIDDLEWARE FOR ABOVE Logic so that you can implement it to protect other routesx
         - middleware.js -> create isOwner middleware
     
+            module.exports.isOwner = async (req, res, next) => {
+                let { id } = req.params;
+                let listing = await Listing.findById(id);
+
+                if (!listing.owner._id.equals(req.user._id)){
+                    req.flash("error", "You are not the owner of this listing.");
+                    console.log("Unautherized Persion trying to Edit the Listing.")
+                    return res.redirect(`/listings/${id}`); 
+                } 
+
+                next();
+            };
+
+        - CHECK IT BY DISPLAYING EDIT AND DELETE BTN ON show.ejs
 
 
 
