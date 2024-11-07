@@ -1359,10 +1359,10 @@
         - use it to toggle log out and log in button with signup button
 
         - we can't use req.user directly in ejs file, but we cn access local variable from ejs file
-        - create res.locals.currentUser = req.user;(app.js) and then access it from navbar.ejs
+        - create res.locals.currUser = req.user;(app.js) and then access it from navbar.ejs
 
             <div class="navbar-nav ms-auto">
-              <% if (!currentUser) { %>
+              <% if (!currUser) { %>
                 <a class="nav-link btn btn-dark nav-btn" href="/signup">Sign up</a>
                 <a class="nav-link btn btn-dark nav-btn" href="/login">Log in </a>
               <% } else { %>
@@ -1371,7 +1371,7 @@
             </div>
 
         - edit app.js
-            res.locals.currentUser = req.user;
+            res.locals.currUser = req.user;
 
 ### Login after Signup
     - current user is not able to login directly after signup 
@@ -1422,4 +1422,71 @@
             res.redirect(redirectUrl);
             }
         );
+
+
+### Listing Owner (for Autherization)
+    - listing autherization
+        - listing can be edit and delete by its creater not by others
+
+    - review autherization
+        - review can be deleted by its creater not by others
+
+    - owner property, change in Schema to add owner, 
+
+    - edit index.js of init folder
+        // Create Owner of the listing
+        initData.data = initData.data.map((obj) => ({...obj, owner: "672b6e4b66a06a8590751b03"}));
+
+    - edit show.ejs
+        <i> Owned by: <= listing.owner.username %> </i> <br>
+    
+    - edit listing.js of routes folder
+        newListing.owner = req.user._id;    //current user is the owner of this new listing
+
+
+### Starting with Autherization
+    - set the owner of the listing and review first before the autherization
+
+    - if currUser_id === listingOwner_id; then show edit / delete button otherwise hide these btns
+
+    - edit show.ejs (before this save currUser as locals in app.js)
+        < if (currUser && currUser._id.equals(listing.owner._id)) { %>
+
+    - but now anyone can edit without login by sending request through hoppscotch orpostman , so apply logic in app.js too for avoidng edit / delete listing (Protect Routes Also)
+
+    - Protect Routes
+        - update route
+            - findByIdAndUpdate(), so check the user is LoggedIn or not first and then chek weather he is owner of this listing or not
+
+        // Listing UPDATE Route
+        router.put("/:id", isLoggedIn, checkListing, wrapAsync      ( async(req, res, next) => {
+        
+            let { id } = req.params;
+            let listing = await Listing.findById(id);
+
+            if (listing.owner._id.equals(req.user._id)){
+            
+                await Listing.findByIdAndUpdate(id, { ...req.       body.listing}); 
+
+                // console.log({ ...req.body.listing});
+
+                req.flash("success", "Listing Updated !");
+                res.redirect(`/listings/${id}`);
+                console.log("Listing Edited and Updated         Successfully...");
+
+            } else {
+                req.flash("error", "You don't have permission       to edit this listing.");
+                res.redirect(`/listings/${id}`);
+                console.log("Unautherized Persion trying to         Edit the Listing.")
+            }
+
+        }));
+
+    - CREATE MIDDLEWARE FOR ABOVE Logic so that you can implement it to protect other routesx
+        - middleware.js -> create isOwner middleware
+    
+
+
+
+
 

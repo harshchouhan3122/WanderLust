@@ -1,6 +1,6 @@
 
 module.exports.isLoggedIn = (req, res, next) => {
-    console.log(`User (currently logged in) details: ${req.user}`);
+    // console.log(`User (currently logged in) details: ${req.user}`);
     if (!req.isAuthenticated()) {       //means no user is logged in
         req.session.redirectUrl = req.originalUrl;
         // console.log("Current URL -> " + req.session.redirectUrl);
@@ -19,3 +19,4 @@ module.exports.saveRedirectUrl = (req, res, next) => {
     }
     next();
 };
+

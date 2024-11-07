@@ -3,6 +3,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Review = require("./review.js");
+const User = require("./user.js");
 
 const defaultImgURL = "https://unsplash.com/photos/a-paper-model-of-a-house-on-a-small-island-gTNAhl22eaE";
 
@@ -37,6 +38,10 @@ const listingSchema = new Schema({
       ref: "Review",
     }
   ],
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 

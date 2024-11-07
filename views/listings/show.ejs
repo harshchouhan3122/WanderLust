@@ -15,6 +15,7 @@
                 <div class="card-body mt-2">
                     <p class="card-text">
                         <!-- <b> < listing.title %> </b> <br> -->
+                        <i> Owned by: <%= listing.owner.username %> </i> <br>
                         <%= listing.description %> <br>
                         &#8377; <%= listing.price.toLocaleString("en-IN") %> / night <br>
                         <%= listing.location %>, <br>
@@ -32,17 +33,20 @@
                 <li> LOCATION: <= listing.location %> </li>
                 <li> COUNTRY: <= listing.country %> </li>
             </ul> -->
-
-            <div class="row">
-                <div class="col-md-1 mb-4 mr-sm-3">
-                    <a href="/listings/<%=listing.id%>/edit" class="btn btn-dark edit-btn">Edit</a>  
+            
+            <!-- <p> <= currUser %> </p> -->
+            <% if (currUser && currUser._id.equals(listing.owner._id)) { %>
+                <div class="row">
+                    <div class="col-md-1 mb-4 mr-sm-3">
+                        <a href="/listings/<%=listing.id%>/edit" class="btn btn-dark edit-btn">Edit</a>  
+                    </div>
+                    <div class="col-md-1">
+                        <form method="POST" action="/listings/<%=listing.id%>?_method=DELETE">
+                            <button class="btn btn-dark delete-btn">Delete</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="col-md-1">
-                    <form method="POST" action="/listings/<%=listing.id%>?_method=DELETE">
-                        <button class="btn btn-dark delete-btn">Delete</button>
-                    </form>
-                </div>
-            </div>
+            <% } %>
 
             <!-- Review Form -->
             <div class="row">
@@ -50,23 +54,25 @@
                     <hr>
                     <h5 class="mb-3">Leave a Review</h5>
         
-                    <form action="/listings/<%=listing.id%>/reviews" method="POST" novalidate class="needs-validation">
+                    
+                        <form action="/listings/<%=listing.id%>/reviews" method="POST" novalidate class="needs-validation">
         
-                        <div class="mb-2">
-                            <label for="rating" class="form-label">Rating</label>
-                            <input class="form-range" type="range" min="1" max="5" id="rating" name="review[rating]">
-                        </div>
-                        
-                        <div class="mb-2">
-                            <label for="comment" class="form-label">Comment</label>
-                            <textarea name="review[comment]" id="comment" rows="3" cols="10" class="form-control" required></textarea>
-                            <div class="invalid-feedback">
-                                Please add some comments for review.
+                            <div class="mb-2">
+                                <label for="rating" class="form-label">Rating</label>
+                                <input class="form-range" type="range" min="1" max="5" id="rating" name="review[rating]">
                             </div>
-                        </div>
+                            
+                            <div class="mb-2">
+                                <label for="comment" class="form-label">Comment</label>
+                                <textarea name="review[comment]" id="comment" rows="3" cols="10" class="form-control" required></textarea>
+                                <div class="invalid-feedback">
+                                    Please add some comments for review.
+                                </div>
+                            </div>
+            
+                            <button class="btn btn-outline-dark mt-3">Submit</button>
+                        </form>
         
-                        <button class="btn btn-outline-dark mt-3">Submit</button>
-                    </form>
 
                     <hr>
                     <h5 class="mb-3">All Reviews</h5>

@@ -16,7 +16,7 @@ const initDB = async() => {
     // Delete the existing DB
     await Listing.deleteMany({});
     // Create Owner of the listing
-    initData.data = initData.data.map((obj) => ({...obj, owner: "672b6e4b66a06a8590751b03"}));
+    initData.data = initData.data.map((obj) => ({...obj, owner: "672c95cab23b5992ce25827b"}));   //idof the owner, create a user first in the database
     // Create the DB of data.js
     await Listing.insertMany(initData.data);
     
