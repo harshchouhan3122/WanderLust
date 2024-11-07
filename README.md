@@ -1303,7 +1303,7 @@
 
 
 
-## Phase 2  -> Part e   ()  -> IMPORTANT
+## Phase 2  -> Part e   (Login Routes Connection, Post-Login Page, Logout, Update Middlewares, Autherization- Listing, Review)  -> IMPORTANT
 
 ### Connecting Login Routes
     - connecting isLoggedIn middleware to listing.js and review.js
@@ -1482,14 +1482,15 @@
 
         }));
 
-    - CREATE MIDDLEWARE FOR ABOVE Logic so that you can implement it to protect other routesx
+#### CREATE MIDDLEWARE FOR ABOVE Logic so that you can implement it to protect other routesx
         - middleware.js -> create isOwner middleware
     
             module.exports.isOwner = async (req, res, next) => {
                 let { id } = req.params;
                 let listing = await Listing.findById(id);
 
-                if (!listing.owner._id.equals(req.user._id)){
+                //if (!listing.owner._id.equals(req.user._id)){
+                if (!listing.owner._id.equals(res.locals.currUser._id)){
                     req.flash("error", "You are not the owner of this listing.");
                     console.log("Unautherized Persion trying to Edit the Listing.")
                     return res.redirect(`/listings/${id}`); 
@@ -1499,6 +1500,62 @@
             };
 
         - CHECK IT BY DISPLAYING EDIT AND DELETE BTN ON show.ejs
+
+### Move all the middlewares from different different files to middleware.js
+    - validReview, checkListing, isOwner, saveRedirectUrl
+
+### Authorization for Reviews (Part 1)
+    - No user can create a review without login (like Youtube)
+
+    - edit review.js of models
+        createdBy: {
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        }
+
+    - edit show.ejs 
+        < if (currUser) { %>
+
+    - protect route also
+        - use isLoggedIn middleware in both the routes
+        - also store the name of the user with review
+            - edit review.js of routes folder
+                newReview.createdBy = req.user._id;
+
+            - delete previous review collection
+                - db.reviews.deleteMany({})
+
+
+### Autherization for Reviews (Part 2)
+    - Display the name of the user along with reviews
+        - Nested Populate in applisting.js
+
+            let listing = await Listing.findById(id)
+                            .populate({
+                                path: "reviews",
+                                populate: {
+                                    path: "createdBy"
+                                },
+                            })
+                            .populate("owner");
+
+    - Create isReviewAuthor middleware to protect delete review route in middleware.js
+        module.exports.isReviewAuthor = async (req, res, next) => {
+            let { id, reviewId } = req.params;
+            let review = await Review.findById(reviewId);
+
+            if (!review.createdBy._id.equals(res.locals.currUser._id)){
+                req.flash("error", "You are not the author of this review.");
+                console.log("Unautherized Person trying to delete the review.")
+                return res.redirect(`/listings/${id}`); 
+            } 
+            next();
+        };
+    
+
+    - Display Delete button only on those reviews which are created by the currUser or Current Logged in User
+    - edit show.ejs
+        < if (currUser && currUser._id.equals(review.createdBy._id)) { %>
 
 
 

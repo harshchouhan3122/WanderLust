@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 
-const ExpressError = require("../utils/ExpressError.js");
+// const ExpressError = require("../utils/ExpressError.js");
 const wrapAsync = require("../utils/wrapAsync.js");
 
 const Listing = require("../models/listing.js");
-const { validateListing } = require("../schema.js");
-const { isLoggedIn, isOwner } = require("../middleware.js");
+// const { validateListing } = require("../schema.js");
+const { isLoggedIn, isOwner, checkListing } = require("../middleware.js");
 
 
 // app.use(express.urlencoded({extended:true}))                    // to get the parameters from the query String 
@@ -21,18 +21,18 @@ const { isLoggedIn, isOwner } = require("../middleware.js");
 
 
 
+// NOTE -> Shifted this middleware to middleware.js
 // Creating Middleware to validate Listing for Create and Update Route
-const checkListing = (req, res, next) => {
-    const { error } = validateListing.validate(req.body);
-    if (error) {
-        let errMsg = error.details.map((el) => el.message).join(",");
-        throw new ExpressError(400, errMsg);
-        // throw new ExpressError(400, error.details[0].message);
-    } else {
-        next();
-    }
-}
-
+// const checkListing = (req, res, next) => {
+//     const { error } = validateListing.validate(req.body);
+//     if (error) {
+//         let errMsg = error.details.map((el) => el.message).join(",");
+//         throw new ExpressError(400, errMsg);
+//         // throw new ExpressError(400, error.details[0].message);
+//     } else {
+//         next();
+//     }
+// }
 
 // Create Route (Index Route    -> to show all the listings)
 router.get("/", wrapAsync( async (req, res, next) => {
@@ -72,7 +72,18 @@ router.post("/", isLoggedIn, checkListing, wrapAsync( async(req, res, next) => {
 // Listing READ (Show Route)
 router.get("/:id", wrapAsync( async (req, res, next) => {
     let { id } = req.params;
-    let listing = await Listing.findById(id).populate("reviews").populate("owner");
+    // let listing = await Listing.findById(id).populate("reviews").populate("owner");
+
+    // Nested Populate for display username with review
+    let listing = await Listing.findById(id)
+                    .populate({
+                        path: "reviews",
+                        populate: {
+                            path: "createdBy"
+                        },
+                    })
+                    .populate("owner");
+
     // console.log(req.user);
     // console.log(listing.owner._id);
     if (listing){

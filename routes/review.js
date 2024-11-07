@@ -1,26 +1,26 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 
-const ExpressError = require("../utils/ExpressError.js");
+// const ExpressError = require("../utils/ExpressError.js");
 const wrapAsync = require("../utils/wrapAsync.js");
 
 const Listing = require("../models/listing.js");
 const Review = require("../models/review.js");
-const { validateReview } = require("../schema.js");
-const { isLoggedIn } = require("../middleware.js");
+// const { validateReview } = require("../schema.js");
+const { validReview, isLoggedIn, isReviewAuthor } = require("../middleware.js");
 
 
 
-// Create Middleware to validate review
-const validReview = (req,res,next) => {
-    const { error } = validateReview.validate(req.body);
-    if (error) {
-        let errMsg = error.details.map((el) => el.message).join(",");
-        throw new ExpressError(400, errMsg);
-    } else {
-        next();
-    }
-};
+// Create Middleware to validate review -> Moved to middleware.js
+// const validReview = (req,res,next) => {
+//     const { error } = validateReview.validate(req.body);
+//     if (error) {
+//         let errMsg = error.details.map((el) => el.message).join(",");
+//         throw new ExpressError(400, errMsg);
+//     } else {
+//         next();
+//     }
+// };
 
 
 // REVIEWS Route form new Review
@@ -30,6 +30,9 @@ router.post("/", isLoggedIn, validReview, wrapAsync( async (req, res, next) => {
     let listing = await Listing.findById(req.params.id);
     // console.log(req.body.review);
     let newReview = new Review(req.body.review);
+
+    // Save the createdBy field with this newListing as currUser
+    newReview.createdBy = req.user._id;
 
     listing.reviews.push(newReview);
 
@@ -43,7 +46,7 @@ router.post("/", isLoggedIn, validReview, wrapAsync( async (req, res, next) => {
 }));
 
 // REVIEW DELETE Route
-router.delete("/:reviewId", isLoggedIn, wrapAsync( async (req, res, next) => {
+router.delete("/:reviewId", isLoggedIn, isReviewAuthor ,wrapAsync( async (req, res, next) => {
     // console.log("Restructured");
     let { id, reviewId } = req.params;
 
