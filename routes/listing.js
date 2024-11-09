@@ -8,6 +8,8 @@ const Listing = require("../models/listing.js");
 // const { validateListing } = require("../schema.js");
 const { isLoggedIn, isOwner, checkListing } = require("../middleware.js");
 
+const listingController = require("../controllers/listings.js");
+
 
 // app.use(express.urlencoded({extended:true}))                    // to get the parameters from the query String 
 // app.use(methodOverride("_method"));                             //for PUT request in UPDATE Route
@@ -35,120 +37,144 @@ const { isLoggedIn, isOwner, checkListing } = require("../middleware.js");
 // }
 
 // Create Route (Index Route    -> to show all the listings)
-router.get("/", wrapAsync( async (req, res, next) => {
-    const allListings = await Listing.find({});
-    // console.log(allListings);
-    console.log("All Listings from the DB...");
-    // res.send(allListings);
-    res.render("listings/index.ejs", {allListings});
-}) );
+// router.get("/", wrapAsync( async (req, res, next) => {
+//     const allListings = await Listing.find({});
+//     // console.log(allListings);
+//     console.log("All Listings from the DB...");
+//     // res.send(allListings);
+//     res.render("listings/index.ejs", {allListings});
+// }) );
 
 
 // CREATE ROUTE (new and create)  -> Always keep it above the READ route
 // Open form for this route
-router.get("/new", isLoggedIn, (req, res) => {
-    res.render("listings/new.ejs");
-    console.log("Loading Form to Create new Listing...");
-});
+// router.get("/new", isLoggedIn, (req, res) => {
+//     res.render("listings/new.ejs");
+//     console.log("Loading Form to Create new Listing...");
+// });
 
 
 // Add New Listing to DB    (CREATE ROUTE)
 // using wrapAsync
-router.post("/", isLoggedIn, checkListing, wrapAsync( async(req, res, next) => {
+// router.post("/", isLoggedIn, checkListing, wrapAsync( async(req, res, next) => {
 
-    const newListing = new Listing(req.body.listing);
-    // console.log(req.user);
-    newListing.owner = req.user._id;    //current user is the owner of this new listing
-    await newListing.save();
+//     const newListing = new Listing(req.body.listing);
+//     // console.log(req.user);
+//     newListing.owner = req.user._id;    //current user is the owner of this new listing
+//     await newListing.save();
 
-    console.log("New Listing Added Successfully...");
-    req.flash("success", "New listing Added Successfully !");
-    res.redirect("/listings");
+//     console.log("New Listing Added Successfully...");
+//     req.flash("success", "New listing Added Successfully !");
+//     res.redirect("/listings");
 
-    })
-);
+//     })
+// );
 
 
 // Listing READ (Show Route)
-router.get("/:id", wrapAsync( async (req, res, next) => {
-    let { id } = req.params;
-    // let listing = await Listing.findById(id).populate("reviews").populate("owner");
+// router.get("/:id", wrapAsync( async (req, res, next) => {
+//     let { id } = req.params;
+//     // let listing = await Listing.findById(id).populate("reviews").populate("owner");
 
-    // Nested Populate for display username with review
-    let listing = await Listing.findById(id)
-                    .populate({
-                        path: "reviews",
-                        populate: {
-                            path: "createdBy"
-                        },
-                    })
-                    .populate("owner");
+//     // Nested Populate for display username with review
+//     let listing = await Listing.findById(id)
+//                     .populate({
+//                         path: "reviews",
+//                         populate: {
+//                             path: "createdBy"
+//                         },
+//                     })
+//                     .populate("owner");
 
-    // console.log(req.user);
-    // console.log(listing.owner._id);
-    if (listing){
-        res.render("listings/show.ejs", {listing});
+//     // console.log(req.user);
+//     // console.log(listing.owner._id);
+//     if (listing){
+//         res.render("listings/show.ejs", {listing});
 
-    } else{
-        console.log("Listing not found...");
-        req.flash("error", "Requested Listing not found !");
-        res.redirect("/listings"); 
-    }
+//     } else{
+//         console.log("Listing not found...");
+//         req.flash("error", "Requested Listing not found !");
+//         res.redirect("/listings"); 
+//     }
 
-    console.log("Listing available...");
-}));
+//     console.log("Listing available...");
+// }));
 
 
 // Listing EDIT route
-router.get("/:id/edit", isLoggedIn, isOwner ,wrapAsync( async (req, res, next) => {
-    let {id} = req.params;
-    let listing = await Listing.findById(id);
-    // console.log(listing);
+// router.get("/:id/edit", isLoggedIn, isOwner ,wrapAsync( async (req, res, next) => {
+//     let {id} = req.params;
+//     let listing = await Listing.findById(id);
+//     // console.log(listing);
 
-    if (listing){
-        console.log('Loading Form to Edit Listing......')
-        res.render("listings/edit.ejs", {listing});
+//     if (listing){
+//         console.log('Loading Form to Edit Listing......')
+//         res.render("listings/edit.ejs", {listing});
 
-    } else{
-        console.log("Listing not found...");
-        req.flash("error", "Requested Listing not found !");
-        res.redirect("/listings"); 
-    }
-}));
+//     } else{
+//         console.log("Listing not found...");
+//         req.flash("error", "Requested Listing not found !");
+//         res.redirect("/listings"); 
+//     }
+// }));
 
 
 // Listing UPDATE Route
-router.put("/:id", isLoggedIn, isOwner, checkListing, wrapAsync( async(req, res, next) => {
+// router.put("/:id", isLoggedIn, isOwner, checkListing, wrapAsync( async(req, res, next) => {
 
-    let { id } = req.params;
+//     let { id } = req.params;
 
-    // We created middleware isOwner for below commented code
-    // let listing = await Listing.findById(id);
-    // if (!listing.owner._id.equals(req.user._id)){
-    //     req.flash("error", "You don't have permission to edit this listing.");
-    //     console.log("Unautherized Persion trying to Edit the Listing.")
-    //     return res.redirect(`/listings/${id}`); 
-    // } 
+//     // We created middleware isOwner for below commented code
+//     // let listing = await Listing.findById(id);
+//     // if (!listing.owner._id.equals(req.user._id)){
+//     //     req.flash("error", "You don't have permission to edit this listing.");
+//     //     console.log("Unautherized Persion trying to Edit the Listing.")
+//     //     return res.redirect(`/listings/${id}`); 
+//     // } 
     
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 
+//     await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 
 
-    // console.log({ ...req.body.listing});
+//     // console.log({ ...req.body.listing});
 
-    req.flash("success", "Listing Updated !");
-    res.redirect(`/listings/${id}`);
-    console.log("Listing Edited and Updated Successfully...");
-}));
+//     req.flash("success", "Listing Updated !");
+//     res.redirect(`/listings/${id}`);
+//     console.log("Listing Edited and Updated Successfully...");
+// }));
 
 
 // Listing DELETE Route
-router.delete("/:id", isLoggedIn, isOwner, wrapAsync( async (req, res, next) => {
-    let { id } = req.params;
-    let result = await Listing.findByIdAndDelete(id);
+// router.delete("/:id", isLoggedIn, isOwner, wrapAsync( async (req, res, next) => {
+    //     let { id } = req.params;
+    //     let result = await Listing.findByIdAndDelete(id);
     
-    console.log(`Listing Deleted... -> ${result.title},${result.location},${result.country}`);
-    req.flash("success", "Listing Deleted !")
-    res.redirect('/listings');
-}));
+    //     console.log(`Listing Deleted... -> ${result.title},${result.location},${result.country}`);
+    //     req.flash("success", "Listing Deleted !")
+    //     res.redirect('/listings');
+// }));
+
+
+// MVC Design Pattern Implemented
+
+// Index Route
+router.get("/", wrapAsync ( listingController.index ) );
+
+// New Listing Route
+router.get("/new", isLoggedIn, listingController.renderNewForm );
+
+// Create Route
+router.post("/", isLoggedIn, checkListing, wrapAsync(listingController.addListing ) );
+
+// Show Route
+router.get("/:id", wrapAsync( listingController.showListing) );
+
+// Edit Route
+router.get("/:id/edit", isLoggedIn, isOwner ,wrapAsync( listingController.renderEditForm));
+
+// Update Route
+router.put("/:id", isLoggedIn, isOwner, checkListing, wrapAsync( listingController.updateListing));
+
+// Destroy Route
+router.delete("/:id", isLoggedIn, isOwner, wrapAsync( listingController.deleteListing));
 
 
 

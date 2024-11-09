@@ -1561,3 +1561,71 @@
 
 
 
+
+
+
+
+## Now we are going to use MVC pattern in our codebase , So now files are getting short
+
+
+## Phase 3  -> Part a   ()
+
+### MVC - Model, View, Control
+    - MVC is a way to write a code and increase modularity and readability in codes
+
+#### Controllers
+    - We write the actual logic of the routes here and then import it in routes
+
+    - Implement Design Pattern/ Framework for Listings
+
+##### Controller for listing.js (Routes)
+    - Create a folder named controllers inside root directory
+        - create listing.js inside controllers folder for listing route's logics
+    - edit listings.js (of controllers)
+
+        const Listing = require("../models/listing");
+
+        // Index Route (All Listings)
+        module.exports.index = async (req, res, next) => {
+            const allListings = await Listing.find({});
+            // console.log(allListings);
+            console.log("All Listings from the DB...");
+            // res.send(allListings);
+            res.render("listings/index.ejs", {allListings});
+        };
+
+    - edit listings.js (of routes folder)
+        const listingContoller = require("../controllers/listings.js");
+
+        // Index Route
+        router.get("/", wrapAsync ( listingController.index ) );
+
+        // New Listing Route
+        router.get("/new", isLoggedIn, listingController.renderNewForm );
+
+        // Create Route
+        router.post("/", isLoggedIn, checkListing, wrapAsync(listingController.addListing ) );
+
+        // Show Route
+        router.get("/:id", wrapAsync( listingController.showListing) );
+
+        // Edit Route
+        router.get("/:id/edit", isLoggedIn, isOwner ,wrapAsync( listingController.renderEditForm));
+
+        // Update Route
+        router.put("/:id", isLoggedIn, isOwner, checkListing, wrapAsync( listingController.updateListing));
+
+        // Destroy Route
+        router.delete("/:id", isLoggedIn, isOwner, wrapAsync( listingController.deleteListing));
+
+    - Move all the logic of (listings.js- routes to listings.js - controllers)
+        - index
+        - renderNewForm
+        - showListing
+        - renderEditForm
+        - updateListing
+        - deleteListing/ destroyListing
+
+
+
+
