@@ -1626,6 +1626,25 @@
         - updateListing
         - deleteListing/ destroyListing
 
+### MVC for Reviews and Users
+#### Controllers
 
+##### Controllers for review.js (Routes)
+    - create reviews.js in controllers folder
+        - move all the logic of routes from review.js(routes folder) to this file
 
+    - require reviewController in review.js(of Routes folder)
+        - update all the review routes same as listing routes
+            - createReview, deleteReview
+
+##### Controllers for users.js (Routes)
+    - create reviews.js in controllers folder
+        - move all the logic of routes from user.js(routes folder) to this file
+
+    - require userController in user.js(of Routes folder)
+        - update all the user routes same as review routes
+            - renderSignupForm, signup 
+            - renderLoginForm, login
+            - logout
+            
 
