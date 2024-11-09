@@ -1733,4 +1733,87 @@
 
     - req.file -> {"fieldname":"listing[image]","originalname":"Screenshot (2).png","encoding":"7bit","mimetype":"image/png","destination":"uploads/","filename":"2060afc878a3afbfbff4054f9db3e470","path":"uploads\\2060afc878a3afbfbff4054f9db3e470","size":543110}
 
+### Cloud Setup (Cloudinary)
+    - we can't store every file as it is, in our database
+    - using cloud storage and saving file link in backend
 
+    - third party free cloud storage -> Cloudinary & .env file setup
+
+    - created acc with hchouhanycce@gmail.com
+
+#### .env File
+    - create .env file in root directory to save the Cloud Credential or any other confidential keys data/ credentials here
+    - never upload .env in github
+    - include this file in .gitignore
+    - .env only used in development phase
+    - works only in key Value pair and without using ny space or any special character 
+    - (use BLOCK letters in variable name -> optional)
+        - API_KEY=aadvjnvjsbdv82g2cd
+
+    - we have to use dotenv library of NodeJs to integrate .env with our code base
+        - npm i dotenv
+        - require it in app.js
+
+        ## Example
+        -.env file
+            SECRET=harshChouhan
+
+        - app.js
+            // .env file integration
+            if (process.env.NODE_ENV != "production"){
+                require('dotenv').config();
+            }
+            console.log(process.env.SECRET);
+
+#### Setup Cloud for project (Cloudinary-> Dashboard -> Keys)
+    - edit .env
+        CLOUD_NAME=dcayfsp
+        CLOUD_API_KEY=593734935854
+        CLOUD_API_SECRET=nym4GO8iGSVTrXwrYLBRXN54
+
+### Store Files (https://www.npmjs.com/package/cloudinary and https://www.npmjs.com/package/multer-storage-cloudinary)
+    - Also check the Cloudinary documentation
+    - now our file will be save on Cloud not in /upload folder
+    - Multer Store Cloudinary
+
+    - npm i cloudinary multer-storage-cloudinary
+
+    - create cloudConfig.js
+        - which configures the cloudinary cloud (for authentication) and integrate it with our code, so that uploaded file can save there
+
+            const cloudinary = require('cloudinary').v2;
+            const { CloudinaryStorage } = require           ('multer-storage-cloudinary');
+
+            // Integrating our backend with cloudinary services
+            cloudinary.config({
+                cloud_name: process.env.CLOUD_NAME,
+                api_key: process.env.CLOUD_API_KEY,
+                api_secret: process.env.CLOUD_API_SECRET,
+            });
+
+            // Define Storage
+            const storage = new CloudinaryStorage({
+                cloudinary: cloudinary,
+                params: {
+                  folder: 'wanderlust-dev',
+                  allowedFormatsf: ["png", "jpeg", "jpg"]
+                },
+              });
+
+
+            module.exports = { cloudinary, storage };
+
+        - edit listing.js (routes folder)
+            // File Uploading
+            const multer  = require('multer');
+
+            const { cloudinary, storage } = require("../cloudConfig.js");
+
+            // const upload = multer({ dest: 'uploads/' });     //Upload -> destination to save a file locally 
+            const upload = multer({ storage });           // Now file are getting uploaded to Cloudinary Storage
+
+        - req.file -> {"fieldname":"listing[image]","originalname":"Screenshot (3).png","encoding":"7bit","mimetype":"image/png","path":"https://res.cloudinary.com/dcayfspmp/image/upload/v1731172640/wanderlust-dev/xpgt969ubjlgxyyknyhe.png","size":335527,"filename":"wanderlust-dev/xpgt969ubjlgxyyknyhe"}
+
+        -> Check the result -> Cloudinary -> Media Library -> wanderlust-dev folder -> uploaded file
+
+        -> Now You can delete the Upload folder from the root directory as Our Cloud Storage is set up properly

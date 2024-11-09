@@ -18,7 +18,11 @@ const listingController = require("../controllers/listings.js");
 
 // File Uploading
 const multer  = require('multer');
-const upload = multer({ dest: 'uploads/' });    //Upload -> destination to save a file locally 
+
+const { cloudinary, storage } = require("../cloudConfig.js");
+
+// const upload = multer({ dest: 'uploads/' });    //Upload -> destination to save a file locally 
+const upload = multer({ storage });        // Now file are getting uploaded to Cloudinary Storage
 
 
 

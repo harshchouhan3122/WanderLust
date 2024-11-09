@@ -1,5 +1,10 @@
 // main backend File (Ist main File)
 
+// .env file integration
+if (process.env.NODE_ENV != "production"){
+    require('dotenv').config();
+}
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
