@@ -16,13 +16,23 @@ const listingController = require("../controllers/listings.js");
 // app.engine("ejs", ejsMate);
 // app.use(express.static(path.join(__dirname, "/public")));       //for CSS styling
 
+// File Uploading
+const multer  = require('multer');
+const upload = multer({ dest: 'uploads/' });    //Upload -> destination to save a file locally 
+
+
 
 // Router.route -> to combine the same named paths
 router.get("/new", isLoggedIn, listingController.renderNewForm );   //keep this route at the top , otherwise new is determined as id
 
+
 router.route("/")
     .get( wrapAsync ( listingController.index ) )                                               // Index Route
-    .post( isLoggedIn, checkListing, wrapAsync(listingController.addListing ) );                // Create Route
+    // .post( isLoggedIn, checkListing, wrapAsync(listingController.addListing ) );                // Create Route
+    .post( upload.single('listing[image]'), (req, res) => {
+        res.send(req.file); //Data related to file
+        // res.send(req.body);
+    });
 
 router.route("/:id")
     .get( wrapAsync( listingController.showListing) )                                           // Show Route

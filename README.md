@@ -1702,3 +1702,35 @@
         // for stable rating display in review card
         <p class="card-text starability-result" data-rating="<= review.rating %>"> Rated: <= review.rating %> stars</p>
 
+### Image Upload
+    - directly file upload functionality
+    - our current form can't send files to backend, its just sending url encoded datas
+    - BSON format has limit, so we can directly save files to our database
+
+    - file -> cloud storage (cloudinay, AWS) -> link -> storing link to mongoDB database
+
+### Manipulating Form
+    - currently our form is sending URLencoded data to our backend
+        - app.use(express.urlencoded({extended: true}));
+    - we have to send the file to backend
+        - enctype = "multipart/form-data"   (IMPORTANT)
+
+    - edit new.ejs
+        <form method="POST" action="/listings" class="needs-validation" novalidate enctype="multipart/form-data">
+
+    - for multipart/form-data we have to use parser for parsing form data - for that we will use multr package of NodeJs
+        - https://www.npmjs.com/package/multer
+        - Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files. It is written on top of busboy for maximum efficiency.
+        - NOTE: Multer will not process any form which is not multipart (multipart/form-data).
+
+    - npm i multer at root directory
+
+    - edit listing.js (of routes folder)
+        const multer  = require('multer')
+        const upload = multer({ dest: 'uploads/' })     -> Destination for saving files
+
+        - our uploaded file saved in uploads folder with BSON data format
+
+    - req.file -> {"fieldname":"listing[image]","originalname":"Screenshot (2).png","encoding":"7bit","mimetype":"image/png","destination":"uploads/","filename":"2060afc878a3afbfbff4054f9db3e470","path":"uploads\\2060afc878a3afbfbff4054f9db3e470","size":543110}
+
+
