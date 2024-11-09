@@ -57,6 +57,7 @@ module.exports.checkListing = (req, res, next) => {
 // review.js
 module.exports.validReview = (req,res,next) => {
     const { error } = validateReview.validate(req.body);
+    // console.log(error);
     if (error) {
         let errMsg = error.details.map((el) => el.message).join(",");
         throw new ExpressError(400, errMsg);

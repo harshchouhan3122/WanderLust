@@ -1668,3 +1668,37 @@
 
     - Do the same for the other routes, also in users.js
 
+### Removed the commented MVC routes after implementing router.route in files of routes folder
+
+### Re-Styling the Rating
+    - Github Repo -> (https://github.com/LunarLogic/starability)
+    - Check -> (https://lunarlogic.github.io/starability/)
+
+    - read their README.md file for applying style - How to Use section
+    - We are going to use Slot Machine rating Design
+
+    - create rating.css in css folder of public folder of root directory and copy the code from the starability-slot.css file of your rating style of github folder
+    - add this css file in boilerplate.js (of layouts folder of views folder)
+        - <link rel="stylesheet" href="/css/rating.css">
+
+    - edit show.ejs
+        <div class="mb-2">
+            <label for="review" class="form-label">Rating</label>
+            <fieldset class="starability-slot">
+                <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                <label for="first-rate1" title="Terrible">1 star</label>
+                <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                <label for="first-rate2" title="Not good">2 stars</label>
+                <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                <label for="first-rate3" title="Average">3 stars</label>
+                <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                <label for="first-rate4" title="Very good">4 stars</label>
+                <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                <label for="first-rate5" title="Amazing">5 stars</label>
+              </fieldset>
+        </div>
+
+        // for stable rating display in review card
+        <p class="card-text starability-result" data-rating="<= review.rating %>"> Rated: <= review.rating %> stars</p>
+
