@@ -33,29 +33,4 @@ router.get("/:id/edit", isLoggedIn, isOwner ,wrapAsync( listingController.render
 
 
 
-// MVC Design Pattern Implemented
-
-// Index Route
-// router.get("/", wrapAsync ( listingController.index ) );
-
-// New Listing Route
-// router.get("/new", isLoggedIn, listingController.renderNewForm );
-
-// Create Route
-// router.post("/", isLoggedIn, checkListing, wrapAsync(listingController.addListing ) );
-
-// Show Route
-// router.get("/:id", wrapAsync( listingController.showListing) );
-
-// Edit Route
-// router.get("/:id/edit", isLoggedIn, isOwner ,wrapAsync( listingController.renderEditForm));
-
-// Update Route
-// router.put("/:id", isLoggedIn, isOwner, checkListing, wrapAsync( listingController.updateListing));
-
-// Destroy Route
-// router.delete("/:id", isLoggedIn, isOwner, wrapAsync( listingController.deleteListing));
-
-
-
 module.exports = router;

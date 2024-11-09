@@ -16,10 +16,9 @@ const reviewController = require("../controllers/reviews.js");
 
 
 // REVIEWS Route form new Review
-// router.post("/listings/:id/reviews", validReview, wrapAsync( async (req, res, next) => {
-    router.post("/", isLoggedIn, validReview, wrapAsync( reviewController.createReview ));
+router.post("/", isLoggedIn, validReview, wrapAsync( reviewController.createReview ));
 
-    // REVIEW DELETE Route
-    router.delete("/:reviewId", isLoggedIn, isReviewAuthor ,wrapAsync( reviewController.deleteReview ));
+// REVIEW DELETE Route
+router.delete("/:reviewId", isLoggedIn, isReviewAuthor ,wrapAsync( reviewController.deleteReview ));
 
 module.exports = router;
