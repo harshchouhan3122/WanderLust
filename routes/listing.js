@@ -17,29 +17,44 @@ const listingController = require("../controllers/listings.js");
 // app.use(express.static(path.join(__dirname, "/public")));       //for CSS styling
 
 
+// Router.route -> to combine the same named paths
+router.get("/new", isLoggedIn, listingController.renderNewForm );   //keep this route at the top , otherwise new is determined as id
+
+router.route("/")
+    .get( wrapAsync ( listingController.index ) )                                               // Index Route
+    .post( isLoggedIn, checkListing, wrapAsync(listingController.addListing ) );                // Create Route
+
+router.route("/:id")
+    .get( wrapAsync( listingController.showListing) )                                           // Show Route
+    .put( isLoggedIn, isOwner, checkListing, wrapAsync( listingController.updateListing))       // Update Route
+    .delete( isLoggedIn, isOwner, wrapAsync( listingController.deleteListing));                 // Destroy Route
+
+router.get("/:id/edit", isLoggedIn, isOwner ,wrapAsync( listingController.renderEditForm));     // Edit Route
+
+
 
 // MVC Design Pattern Implemented
 
 // Index Route
-router.get("/", wrapAsync ( listingController.index ) );
+// router.get("/", wrapAsync ( listingController.index ) );
 
 // New Listing Route
-router.get("/new", isLoggedIn, listingController.renderNewForm );
+// router.get("/new", isLoggedIn, listingController.renderNewForm );
 
 // Create Route
-router.post("/", isLoggedIn, checkListing, wrapAsync(listingController.addListing ) );
+// router.post("/", isLoggedIn, checkListing, wrapAsync(listingController.addListing ) );
 
 // Show Route
-router.get("/:id", wrapAsync( listingController.showListing) );
+// router.get("/:id", wrapAsync( listingController.showListing) );
 
 // Edit Route
-router.get("/:id/edit", isLoggedIn, isOwner ,wrapAsync( listingController.renderEditForm));
+// router.get("/:id/edit", isLoggedIn, isOwner ,wrapAsync( listingController.renderEditForm));
 
 // Update Route
-router.put("/:id", isLoggedIn, isOwner, checkListing, wrapAsync( listingController.updateListing));
+// router.put("/:id", isLoggedIn, isOwner, checkListing, wrapAsync( listingController.updateListing));
 
 // Destroy Route
-router.delete("/:id", isLoggedIn, isOwner, wrapAsync( listingController.deleteListing));
+// router.delete("/:id", isLoggedIn, isOwner, wrapAsync( listingController.deleteListing));
 
 
 

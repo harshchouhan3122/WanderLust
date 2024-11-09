@@ -1649,4 +1649,22 @@
 
 ### Routes -> listing.js, review.js, user.js -> remove Commented Routes (Previous routes)
             
+### Router.route (https://expressjs.com/en/5x/api.html#router.route)
+    - Returns an instance of a single route which you can then use to handle HTTP verbs with optional middleware. Use router.route() to avoid duplicate route naming and thus typing errors.
+    - Combine different types (put, post) routes with same named path request
+    - router.get("/new", isLoggedIn, listingController.renderNewForm ); //keep this route at the top , otherwise new is determined as id
+
+    - Previously written code
+        // Index Route
+        router.get("/", wrapAsync ( listingController.index ) );
+        // Create Route
+        router.post("/", isLoggedIn, checkListing, wrapAsync(listingController.addListing ) );
+
+    - edit listings.js (of Routes) -> updated code
+        // Router.route -> to combine the same named paths
+        router.route("/")
+            .get( wrapAsync ( listingController.index ) )
+            .post( isLoggedIn, checkListing, wrapAsync(listingController.addListing ) );
+
+    - Do the same for the other routes, also in users.js
 
