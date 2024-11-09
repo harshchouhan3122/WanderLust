@@ -32,11 +32,11 @@ router.get("/new", isLoggedIn, listingController.renderNewForm );   //keep this 
 
 router.route("/")
     .get( wrapAsync ( listingController.index ) )                                               // Index Route
-    // .post( isLoggedIn, checkListing, wrapAsync(listingController.addListing ) );                // Create Route
-    .post( upload.single('listing[image]'), (req, res) => {
-        res.send(req.file); //Data related to file
-        // res.send(req.body);
-    });
+    .post( isLoggedIn, upload.single('listing[image]'), checkListing, wrapAsync(listingController.addListing ) );                // Create Route
+    // .post( upload.single('listing[image]'), (req, res) => {
+    //     res.send(req.file); //Data related to file
+    //     // res.send(req.body);
+    // });
 
 router.route("/:id")
     .get( wrapAsync( listingController.showListing) )                                           // Show Route

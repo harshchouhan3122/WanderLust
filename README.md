@@ -1814,6 +1814,29 @@
 
         - req.file -> {"fieldname":"listing[image]","originalname":"Screenshot (3).png","encoding":"7bit","mimetype":"image/png","path":"https://res.cloudinary.com/dcayfspmp/image/upload/v1731172640/wanderlust-dev/xpgt969ubjlgxyyknyhe.png","size":335527,"filename":"wanderlust-dev/xpgt969ubjlgxyyknyhe"}
 
+        - Store this req.file -> path in mongoDB in next section
+
         -> Check the result -> Cloudinary -> Media Library -> wanderlust-dev folder -> uploaded file
 
         -> Now You can delete the Upload folder from the root directory as Our Cloud Storage is set up properly
+
+### Save Link in MongoDB
+    - Modify listing Schema (listing.js of models folder)
+        image: {
+          url: String,
+          filename: String
+        },
+
+    - edit listing.js of Routes folder
+            .post( isLoggedIn, checkListing, upload.single('listing[image]'), wrapAsync(listingController.addListing ) );                // Create Route
+
+            - use checkListing middleware after upload for checking current result
+
+    - edit listing.js of controllers folder
+        let url = req.file.path;
+        let filename = req.file.filename;
+
+        newListing.image = {url, filename}; // save the url and filename in mongoDB from Cloudinary
+
+### Display Image
+    - ReInitialize the init Data with the new image object

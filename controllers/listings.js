@@ -17,10 +17,14 @@ module.exports.renderNewForm = (req, res) => {
 
 // Create Route (Save new Listing)
 module.exports.addListing = async(req, res, next) => {
+    let url = req.file.path;
+    let filename = req.file.filename;
+    // console.log(url, filename);
 
     const newListing = new Listing(req.body.listing);
     // console.log(req.user);
     newListing.owner = req.user._id;    //current user is the owner of this new listing
+    newListing.image = {url, filename}; // save the url and filename in mongoDB from Cloudinary
     await newListing.save();
 
     console.log("New Listing Added Successfully...");
