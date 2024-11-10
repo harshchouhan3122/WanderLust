@@ -1,4 +1,4 @@
-# Major Project - Airbnb Website
+# Major Project - Airbnb Website (Wanderlust)
 
     - Download nodejs first -> https://nodejs.org/en
     - cmd to project folder
@@ -1568,7 +1568,7 @@
 ## Now we are going to use MVC pattern in our codebase , So now files are getting short
 
 
-## Phase 3  -> Part a   ()
+## Phase 3  -> Part a   (MVC applied, Controllers, router.route, rating restyle, Manipulate form- upload file, Cloud Setup, Store Link in MongoDB, .env file)
 
 ### MVC - Model, View, Control
     - MVC is a way to write a code and increase modularity and readability in codes
@@ -1840,3 +1840,11 @@
 
 ### Display Image
     - ReInitialize the init Data with the new image object
+        - https://github.com/apna-college/wanderlust/blob/main/init/data.js
+    
+    - edit index.ejs of listings folder of views folder
+        <img src="<=listing.image.url%>" class="card-img-top" alt="listing_img" style="height: 20rem;">
+
+    - Try to limit the size of the image to be upload to use your cloud efficiently
+        - In production, we limit the uploading file size
+
