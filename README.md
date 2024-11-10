@@ -1568,7 +1568,7 @@
 ## Now we are going to use MVC pattern in our codebase , So now files are getting short
 
 
-## Phase 3  -> Part a   (MVC applied, Controllers, router.route, rating restyle, Manipulate form- upload file, Cloud Setup, Store Link in MongoDB, .env file)
+## Phase 3  -> Part a   (MVC applied, Controllers, router.route, rating restyle, Manipulate form- upload file, Cloud Setup, Store Link in MongoDB, .env file, Data ReInitialized)
 
 ### MVC - Model, View, Control
     - MVC is a way to write a code and increase modularity and readability in codes
