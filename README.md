@@ -1866,6 +1866,29 @@
     
     - edit listings.js of controllers
         - same changes as of previous section when we are creating new listing after uploading new file
-        
+        // If we get the file in edit form then only we are going to extract url and filename from the form
+        if (typeof req.file !== "undefined") {
+            let url = req.file.path;
+            let filename = req.file.filename;
+            listing.image = {url, filename};
+
+            await listing.save();
+        }
+
+### Image Preview for Edit Page
+    - Create Image Preview on Edit Page because we are get aware about the previous uploaded image on edit form
+    - create new div abpve upload new image section on edit.ejs form
+
+    - https://cloudinary.com/documentation/image_transformations (Image Manipulation by Cloudinary)
+    - or we can manipulate preview image manually using css
+
+    - use cloudinary image transformation link
+        - https://res.cloudinary.com/demo/image/upload/ar_1.0,c_fill,h_250/bo_5px_solid_lightblue/leather_bag_gray.jpg
+        - https://res.cloudinary.com/dcayfspmp/image/upload/c_fill,h_250,e_blur:300/v1731259551/wanderlust-dev/g1yep5fjswpjcn8hcpmg.png
+
+        - edit renderEditForm function listings.js of controller 
+            // Image Tranformation using Cloudinary
+            let originalImageURL = listing.image.url;
+            let previewImageURL = originalImageURL.replace("/upload", "/upload/c_fill,h_250");
 
 

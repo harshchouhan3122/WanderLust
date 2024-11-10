@@ -69,8 +69,12 @@ module.exports.renderEditForm = async (req, res, next) => {
     // console.log(listing);
 
     if (listing){
-        console.log('Loading Form to Edit Listing......')
-        res.render("listings/edit.ejs", {listing});
+        // Image Tranformation using Cloudinary
+        let originalImageURL = listing.image.url;
+        let previewImageURL = originalImageURL.replace("/upload", "/upload/c_fill,h_250");
+
+        console.log('Loading Form to Edit Listing......');
+        res.render("listings/edit.ejs", {listing, previewImageURL});
 
     } else{
         console.log("Listing not found...");
