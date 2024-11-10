@@ -92,9 +92,17 @@ module.exports.updateListing = async(req, res, next) => {
     //     return res.redirect(`/listings/${id}`); 
     // } 
     
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 
-
+    let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 
     // console.log({ ...req.body.listing});
+
+    // If we get the file in edit form then only we are going to extract url and filename from the form
+    if (typeof req.file !== "undefined") {
+        let url = req.file.path;
+        let filename = req.file.filename;
+        listing.image = {url, filename};
+    
+        await listing.save();
+    }
 
     req.flash("success", "Listing Updated !");
     res.redirect(`/listings/${id}`);

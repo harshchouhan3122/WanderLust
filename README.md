@@ -1848,3 +1848,24 @@
     - Try to limit the size of the image to be upload to use your cloud efficiently
         - In production, we limit the uploading file size
 
+
+
+
+
+
+
+## Phase 3  -> Part b   ()
+
+### Edit Listing Image
+    - Change Edit form same as Create Listing Form (Directly upload image)
+    - form update - route change - upload image to cloudinary - get link - save it to mongoDB
+
+    - edit edit.ejs of views to update form to upload file
+    - edit listing.js of routes 
+        upload.single('listing[image]') in put request of update route
+    
+    - edit listings.js of controllers
+        - same changes as of previous section when we are creating new listing after uploading new file
+        
+
+
