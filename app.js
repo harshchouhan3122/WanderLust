@@ -85,9 +85,9 @@ main().then(()=>{
 
 
 // Root Directory
-app.get("/", (req, res)=>{
-    res.send("Server is working....");
-});
+// app.get("/", (req, res)=>{
+//     res.send("Server is working....");
+// });
 
 
 

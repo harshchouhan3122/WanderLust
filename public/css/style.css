@@ -39,6 +39,28 @@ body {
     font-weight: bold !important;
 }
 
+.nav-search{
+    display: flex;
+    gap: 1rem;
+}
+
+#nav-search-input{
+  padding: 0.5rem 3rem;
+  border: 1px solid grey;
+  border-radius: 25px;
+}
+
+#nav-search-btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 25px;
+  background-color: #fe424d;
+  color: #fff;
+}
+
 
 /*   FOOTER   */
 
@@ -80,6 +102,43 @@ body {
 
 
 /*   INDEX (All Listings Page    */
+
+/* Filters */
+#filters{
+    display: flex;
+    gap: 1.5rem;
+}
+
+.filter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    opacity: 0.7;
+}
+
+.filter:hover {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.filter p{
+    font-size: 0.8rem;
+}
+
+#tax-switch{
+    border: 1px solid grey;
+    border-radius: 2rem;
+    padding: 1rem !important;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin-bottom: 1rem;
+}
+
+
 
 /* Cards */
 /* .card{ */

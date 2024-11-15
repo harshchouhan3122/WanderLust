@@ -2190,7 +2190,7 @@
      -> Can we export function and use same one in the same file ?
 
 
-## NOTE: IMPORTANT CHANGES 
+### NOTE: IMPORTANT CHANGES 
     - Update init data with their coordinates (Geocoding or through map)
         - edit index.js of init folder
             // Assign the same coordinates [20, 40] and a fixed owner ID to all listings
@@ -2213,3 +2213,86 @@
                     onerror="this.onerror=null; this.src='/icons/imageLoader.png'; document.getElementById('listing-link').href='/icons/imageLoader.png';"
                 >
             </a>
+
+
+
+## Phase 3  -> Part c   (Adding Filters UI, Search Filter UI, Functional Tax-Switch)
+
+### Fixing Home Page
+    - edit navbar.ejs of includes folder
+    - delete Home and create /listings as root directory so delete / from app.js
+        // Root Directory
+        // app.get("/", (req, res)=>{
+        //     res.send("Server is working....");
+        // });
+        
+    - Add UI for Filters (Not Implemented)
+        - edit index.ejs and edit css file
+            <div id="filters" class="mb-2 ">
+                <div class="filter">
+                    <div><i class="fa-solid fa-fire"></i></div>
+                    <p>Trending</p>
+                </div>
+            </div>
+
+
+### Add UI for Tax Switch
+
+    - Adding Search Functionality using these filters (Not Implemented) 
+        - Edit Listing Schema for this
+            category : {
+                type: String,
+                enum: {"mountains", "farms", "rooms", "artic", ...}
+            }
+        - Edit New.ejs
+            - give the dropdown option to select category of Listing as defined in enum in Schema
+            - create another .ejs file and another route in listing controller for displaying Filtered Content
+
+    - Adding UI for Tax Switch
+        - Use Bootstrap Switch (Checks & Radio)
+        - make filters responsive
+
+        - edit index.ejs
+            <div id="tax-switch" class="ms-auto">
+                <div class="form-check-reverse form-switch">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Total price with Tax</label>
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                </div>
+            </div>
+
+    - Making Tax Switch Functional
+        - create script for index.ejs to toggle effect using event listeners
+
+        - edit index.ejs and edit css file
+            <script>
+                let taxSwitch = document.getElementById("flexSwitchCheckDefault");
+                taxSwitch.addEventListener("click", ()=>{
+                    // console.log('Clicked');
+                    let taxInfo = document.getElementsByClassName("tax-info");
+
+                    for(info of taxInfo) {
+                        if (info.style.display != 'inline') {
+                            info.style.display = "inline";
+                        } else {
+                            info.style.display = "none";
+                        }
+                    }
+                });
+            </script>
+
+### Add UI for Search (Backend -> Not Implemented)
+    - Bootstrap -> Navbar -> Search
+    - edit navbar.ejs and edit css file
+        <div class="navbar-nav ms-auto" >
+          <form class="form-inline nav-search">
+            <input class="form-control mr-sm-2" type="search" id="nav-search-input" placeholder="Search Destinations" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" id="nav-search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
+          </form>
+        </div>
+
+## Phase 3  -> Part d   (Deploy Project)
+ 
+
+
+
+    
