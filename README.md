@@ -2290,9 +2290,101 @@
           </form>
         </div>
 
-## Phase 3  -> Part d   (Deploy Project)
- 
 
 
 
+
+
+
+## Phase 3  -> Part d   (Deploy Project on Cloud)
+
+### Using Mongo Atlas (Setting up Cloud Database)
+    - Cloud Database Service
+    - Create Account on Mongo Atlas (Free Tier)
+        - JavaScript/ NodeJS
+        - Your PC IP first then add render's IP
+
+    - Get Databse Url after Clicking on Connect Cluster
+        - Replace your username and password in Database Link
+
+    - Paste DB link in .env file and acccessit in app.js from .env
+
+    - Try to start nodemon app.js again
+
+
+### Mongo Session Store (https://www.npmjs.com/package/connect-mongo)
+    - Use another Session Store for Production work
+        - npm i connect-mongo 
+        - const mongoStore = require("connect-mongo")
+
+    - edit app.js
+        const store = MongoStore.create({
+            mongoUrl: dbUrl,
+            crypto: {
+                secret: "secretCode", 
+            },
+            touchAfter: 24 * 3600 // time period in seconds
+        });
+
+        store.on("error", (err)=>{
+            console.log("ERROR in MONGO SESSIONSTORE", err)
+        });
+
+        const sessionOptions = {
+            store,
+            secret: "secretCode",
+            resave: false,
+            saveUninitialized: true,
+            cookie: {
+                expires: Date.now() + (7 * 24 * 60 * 60 * 1000), //for 1 week , this function returns in millisec
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+                httpOnly: true,
+            },
+        };
+
+    - User gets logout after 14 days by default -> if he will be inactive for 14 days
+
+
+### Deployment with render
+    - render, netlify, cyclic
+
+    - edit package.json (node -v)
+          "engines":{
+            "node": "22.11.0"
+            },
+
+    - render.com create acoount (harsh3121 used)
+
+### Push Code to Github Repo
+    - transfer all the credentials to .env file
+
+    - git init 
+    - code .gitignore
+        .env
+        node_modules/
+    - git add .
+    - git commit -m "Added Project Files"
+
+    - create private repo
+
+### Render with Github
+    - Connect Github Repo with render
+    - Create Web Services
+        - leave root directory option
+        - npm install
+        - node app.js
+        - stop auto deployement
+
+### Create New Services
+    - add environment variables
+        - environment -> then add env variables
+
+    - configure Atlas
+        - store render's ip on atlas
+
+        - render -> logs -> connect(right top) -> white list all the given ip's (add these ips in Atlas -> Network Access)
+
+        - Build - Clear cache and Deploy (on render)
+
+    - You can access your project using the link shown on top of the logs on render (https://wanderlust-harsh.onrender.com)
     

@@ -37,14 +37,49 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 
+
+// // Connect Databse (Local)
+// const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust"
+
+// MongoAtlasDB (Cloud Database)
+const dbUrl = process.env.ATLASDB_URL;
+
+async function main() {
+    // await mongoose.connect(MONGO_URL);
+    await mongoose.connect(dbUrl);
+}
+
+main().then(()=>{
+    console.log("Connected to DB....");
+})
+.catch((err)=>{
+    console.log(`Error Occurred: ${err}`)
+})
+
 // sessions for auto login functionality
 const session = require("express-session");
+const MongoStore = require("connect-mongo")
 
 // connect-flash for alert messages
 const flash = require("connect-flash");
 
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto: {
+        // secret: "secretCode", 
+        secret: process.env.SECRET, 
+    },
+    touchAfter: 24 * 3600 // time period in seconds
+});
+
+store.on("error", (err)=>{
+    console.log("ERROR in MONGO SESSIONSTORE", err)
+});
+
 const sessionOptions = {
-    secret: "secretCode",
+    store,
+    // secret: "secretCode",
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -67,19 +102,6 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
 
-// Connect Databse
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust"
-
-async function main() {
-    await mongoose.connect(MONGO_URL);
-}
-
-main().then(()=>{
-    console.log("Connected to DB....");
-})
-.catch((err)=>{
-    console.log(`Error Occurred: ${err}`)
-})
 
 
 
