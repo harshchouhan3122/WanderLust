@@ -30,7 +30,7 @@ module.exports.addListing = async(req, res, next) => {
 
     // Parse coordinates as an object with lat and lng properties
     const coordinates = JSON.parse(req.body.listing.coordinates);   // Should be { lat: ..., lng: ... }
-    console.log("Coordinates (after parsing):", coordinates);
+    // console.log("Coordinates (after parsing):", coordinates);
 
     // console.log(req.user);
     newListing.owner = req.user._id;        //current user is the owner of this new listing
