@@ -33,7 +33,16 @@ const validateListing = Joi.object({
                 'string.uri': 'Image URL must be a valid URI.'
             }),
             filename: Joi.string().allow('', null).optional() // Allow empty or null for optional filename
-        }).optional()
+        }).optional(),
+
+        // Coordinates: an array of numbers with at least one element
+        // coordinates: Joi.array().items(Joi.number()).length(2).messages({
+        //     'array.length': 'Coordinates must contain exactly two values (latitude and longitude).',
+        //     'any.required': 'Coordinates are required.'
+        // }).required(),
+
+        // we are getting coordinates as string in form-data -> parsing it at listing.js(controllers) as array before saving it to database
+        coordinates: Joi.string().required(),
 
     }).required()
 });

@@ -1854,7 +1854,7 @@
 
 
 
-## Phase 3  -> Part b   ()
+## Phase 3  -> Part b   (Image Preview, Maps)
 
 ### Edit Listing Image
     - Change Edit form same as Create Listing Form (Directly upload image)
@@ -1892,3 +1892,20 @@
             let previewImageURL = originalImageURL.replace("/upload", "/upload/c_fill,h_250");
 
 
+### Getting Started with Maps ()
+    - we will use Mapbox (but now it requires Credit Card to create account)
+    - search for another free alternate options for map
+        - OpenStreetMap (OSM) + Leaflet or MapLibre
+        - Mapbox (Free Tier)
+        - Here Maps (Free Tier)
+        - Google Maps Platform (Free Tier)
+        - MapTiler (Free Tier)
+
+##### Search for free Map APIs (use harshchouhanycce2020@gmail.com) to check the option then final - hchouhanycce@gmail.com
+
+- SELECT EXACT LOCATION ON MAP FUNCTIONALITY
+     -> Can we export function and use same one in the same file ?
+
+
+## UPDATE THIS FILE FOR MAP Docs (String to Array)
+## CONVERT two map.js to single one

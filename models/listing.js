@@ -46,6 +46,10 @@ const listingSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+  coordinates : {
+    type: [Number],
+    required: true
+  }
 });
 
 

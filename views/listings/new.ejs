@@ -8,12 +8,21 @@
 
 <% layout('/layouts/boilerplate') -%>
 
+<!-- Pass latitude and longitude to map.js (Initialize Values) -->
+<script>
+    const latitude = 20.593684;
+    const longitude = 78.96288;
+    const address = "India";
+    const zoom = 4;
+</script>
+
 <div class="row ">
     <div class="col-8  offset-2">
         <body>
             <h3 class="mb-4">Create a New Listing</h3>
+
             <form method="POST" action="/listings" class="needs-validation" novalidate enctype="multipart/form-data">
-        
+
             <div class="mb-4">
                 <label for="title" class="form-label">Title</label>
                 <input class="form-control" type="text" name="listing[title]" placeholder="Add a catchy title" required> 
@@ -56,14 +65,32 @@
                 <div class="invalid-feedback"> Invalid Location. </div>
             </div>
 
+            <div class="mb-4">
+                <label for="coordinates" class="form-label">Select your exact location on map: </label>
+                <!-- Hidden Input to hold Coordinates -->
+                <input type="hidden" name="listing[coordinates]" id="coordinates" />
+                <!-- <input type="hidden" name="listing[coordinates]" /> -->
+
+                <div id="map"></div>
+            </div>
+
                 <br><br>
-                <button class="btn btn-dark add-btn">Add</button>
+                <button class="btn btn-dark add-btn" onclick="fetchCurrentPosition(event)">Add</button>
             </form>
         
             <!-- <br><br> <a href="/listings">All Listings</a> -->
              
             <!-- Form Validation Bootstrap -> OR write it on BoilerPlate -->  
             <!-- <script src="/js/script.js"></script> -->
+
+
+                            
+            <!-- Leaflet and map functionality -->
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+            <!-- External JS for map -->
+            <script src="/js/map.js"></script>
+
         </body>
     </div>
 </div>

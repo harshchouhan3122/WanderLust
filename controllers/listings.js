@@ -11,20 +11,36 @@ module.exports.index = async (req, res, next) => {
 
 // Render New Form for new Listing
 module.exports.renderNewForm = (req, res) => {
+    let initial_Lat = 28.679079;        // Delhi Coordinates for the first time, userLocation for the upgraded feature
+    let initial_Lng = 77.069710 ;
+    // let coordinates = [lat, lng];
+    // res.render("listings/new.ejs", { initial_Lat, initial_Lng });
     res.render("listings/new.ejs");
     console.log("Loading Form to Create new Listing...");
 };
 
 // Create Route (Save new Listing)
 module.exports.addListing = async(req, res, next) => {
+    // console.log("Request Body:", req.body); // This will print the entire body of the request
+    // console.log("Listing Data:", req.body.listing); // This will print only the 'listing' part
+    // console.log("Coordinates:", req.body.listing.coordinates); // Log the coordinates to verify they are in the expected format
+
+    // for image
     let url = req.file.path;
     let filename = req.file.filename;
     // console.log(url, filename);
 
     const newListing = new Listing(req.body.listing);
+    // for coordinates from map
+    coordinates = JSON.parse(req.body.listing.coordinates);     // Convert string '[28,75]' into an array [28, 75]
+    console.log("Coordinates (after parsing):", coordinates);
+
     // console.log(req.user);
-    newListing.owner = req.user._id;    //current user is the owner of this new listing
-    newListing.image = {url, filename}; // save the url and filename in mongoDB from Cloudinary
+    newListing.owner = req.user._id;        //current user is the owner of this new listing
+    newListing.image = {url, filename};     // save the url and filename in mongoDB from Cloudinary
+    newListing.coordinates = coordinates;
+
+    // console.log(`Final Listing to save :::::  ${newListing}`);
     await newListing.save();
 
     console.log("New Listing Added Successfully...");
@@ -50,7 +66,9 @@ module.exports.showListing = async (req, res, next) => {
 
     // console.log(req.user);
     // console.log(listing.owner._id);
+
     if (listing){
+        // console.log(listing);
         res.render("listings/show.ejs", {listing});
 
     } else{
@@ -96,8 +114,16 @@ module.exports.updateListing = async(req, res, next) => {
     //     return res.redirect(`/listings/${id}`); 
     // } 
     
-    let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing}); 
     // console.log({ ...req.body.listing});
+    let updateListing = { ...req.body.listing};
+    // console.log(updateListing);
+
+    // Convert coordinates from String to Number
+    coordinates = JSON.parse(req.body.listing.coordinates);     // Convert string '[28,75]' into an array [28, 75]
+    // console.log("Coordinates (after parsing):", coordinates);
+    updateListing.coordinates = coordinates;
+
+    let listing = await Listing.findByIdAndUpdate(id, updateListing); 
 
     // If we get the file in edit form then only we are going to extract url and filename from the form
     if (typeof req.file !== "undefined") {

@@ -1,6 +1,16 @@
 
 <% layout('/layouts/boilerplate') -%>
 
+<!-- Pass latitude and longitude to map.js -->
+<script>
+    // const latitude = "<= listing.coordinates[0] %>";
+    // const longitude = "<= listing.coordinates[1] %>";
+    const latitude = <%= listing.coordinates && listing.coordinates[0] ? listing.coordinates[0] : 0 %>;
+    const longitude = <%= listing.coordinates && listing.coordinates[1] ? listing.coordinates[1] : 0 %>;
+    const address = "<%= listing.location %>, <%= listing.country %>";
+    const zoom = 14;
+</script>
+
 <div class="row">
     <div class="col-8 offset-2">
 
@@ -64,14 +74,31 @@
                     <input class="form-control" type="text" name="listing[location]"  value="<%=listing.location%>" required> 
                     <div class="invalid-feedback"> Invalid Location. </div>
                 </div>
+
+                
+                <div class="mb-4">
+                    <label for="coordinates" class="form-label">Location on Map:</label>
+                    <!-- Hidden Input to hold Coordinates -->
+                    <!-- <input type="hidden" name="listing[coordinates]" id="coordinates" value=<=listing.coordinates%>/> -->
+                    <input type="hidden" name="listing[coordinates]" id="coordinates" />
+
+                    <div id="map"></div>
+                </div>
             
                 <br><br>
-                <button class="btn btn-dark edit-btn">Save</button> 
+                <button class="btn btn-dark edit-btn"  onclick="fetchCurrentPosition(event)">Save</button> 
                 <!-- <br><br> <a href="/listings">All Listings</a> -->
             </form>
         
             <!-- Form Validation Bootstrap / Imported from Boilerplate.ejs -->
             <!-- <script src="/js/script.js"></script> -->
+
+                                                        
+            <!-- Leaflet and map functionality -->
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+            <!-- External JS for map -->
+            <script src="/js/map.js"></script>
             
         </body>
 
