@@ -5,9 +5,10 @@
 <script>
     const latitude = "<%= listing.coordinates[0] %>";
     const longitude = "<%= listing.coordinates[1] %>";
-    // const latitude = <= listing.coordinates[0] === undefined ? 0 : listing.coordinates[0] %>;
-    // const longitude = <= listing.coordinates[1] === undefined ? 0 : listing.coordinates[1] %>;
     const address = "<%= listing.location %>, <%= listing.country %>";
+    const zoom = 14;
+    const draggableMarker = false;
+    const map_apiKey = "<%= process.env.MAP_API %>";
 </script>
 
 <div class="row">
@@ -18,8 +19,16 @@
             <h3 class="mb-4"> <%= listing.title %> </h3>
 
             <div class="card col-md-7 show-card listing-card" >
-                <a href="<%= listing.image.url %>" target="_blank">
+                <!-- <a href="<%= listing.image.url %>" target="_blank">
                     <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="listing_img">
+                </a> -->
+                <a id="listing-link" href="<%= listing.image.url %>" target="_blank">
+                    <img 
+                        src="<%= listing.image.url %>" 
+                        class="card-img-top show-img" 
+                        alt="listing_img"
+                        onerror="this.onerror=null; this.src='/icons/imageLoader.png'; document.getElementById('listing-link').href='/icons/imageLoader.png';"
+                    >
                 </a>
                 <div class="card-body mt-2">
                     <p class="card-text">
@@ -146,7 +155,8 @@
             <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
             <!-- External JS for map -->
-            <script src="/js/showMap.js"></script>
+            <!-- <script src="/js/showMap.js"></script> -->
+            <script src="/js/map.js"></script>
 
         </body>
 

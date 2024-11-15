@@ -10,10 +10,12 @@
 
 <!-- Pass latitude and longitude to map.js (Initialize Values) -->
 <script>
-    const latitude = 20.593684;
+    const latitude = 20.593684;         // Default set it to Centeral India's Coordintes
     const longitude = 78.96288;
     const address = "India";
     const zoom = 4;
+    const draggableMarker = true;
+    const map_apiKey = "<%= process.env.MAP_API %>";  //for geocoding APIs
 </script>
 
 <div class="row ">
@@ -75,6 +77,7 @@
             </div>
 
                 <br><br>
+                <!-- onClick function is defined in map.js for sending current location of marker with Listing data -->
                 <button class="btn btn-dark add-btn" onclick="fetchCurrentPosition(event)">Add</button>
             </form>
         

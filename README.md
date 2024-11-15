@@ -1892,8 +1892,14 @@
             let previewImageURL = originalImageURL.replace("/upload", "/upload/c_fill,h_250");
 
 
-### Getting Started with Maps ()
-    - we will use Mapbox (but now it requires Credit Card to create account)
+
+
+### Map Setup 
+    - https://www.youtube.com/watch?v=ls_Eue1xUtY (Tutorial on Youtube)
+    - https://leafletjs.com/examples/quick-start/
+    - https://leafletjs.com/reference.html
+
+    - we used Mapbox (but now it requires Credit Card to create account)
     - search for another free alternate options for map
         - OpenStreetMap (OSM) + Leaflet or MapLibre
         - Mapbox (Free Tier)
@@ -1901,11 +1907,309 @@
         - Google Maps Platform (Free Tier)
         - MapTiler (Free Tier)
 
-##### Search for free Map APIs (use harshchouhanycce2020@gmail.com) to check the option then final - hchouhanycce@gmail.com
+#### For Display Map -> OpenStreetMap (OSM) + Leaflet
+    - create map.js file inside the public folder
 
-- SELECT EXACT LOCATION ON MAP FUNCTIONALITY
+    - edit .ejs templates to include Leaflet CSS and JS
+        - Adding CSS file (Added to boilerplate.ejs)
+            <!-- Leaflet CSS -->
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+
+        - Adding Script JS Files -> added to ejs file not in boilerplate to avoid errors                                          
+            <!-- Leaflet and map functionality -->
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+            <!-- External JS for map -->
+            <script src="/js/map.js"></script>
+
+    - edit listing.js of models
+        // add coordinates to listingSchema
+          coordinates : {
+            type: [Number],
+            required: true
+          }
+
+    - We can't access the variables from the backend directly, that'swhy we pass those variables to ejs template and then access those variable in map.js using ejs template
+
+        - edit .env file to store credentials
+            # hchouhanycce
+
+            # Couldinary
+            CLOUD_NAME=dcay
+            CLOUD_API_KEY=5934935854
+            CLOUD_API_SECRET=nyiGSVTrXwrYLBRXN54
+
+            # OpenCage
+            MAP_API=602cacd987
+
+        - edit new.ejs, edit.ejs, show.ejs
+            <!-- Pass latitude and longitude to map.js (Initialize Values) -->
+            <script>
+                const latitude = <= listing.coordinates && listing.coordinates[0] ? listing.coordinates[0] : 0 %>;
+                const longitude = <= listing.coordinates && listing.coordinates[1] ? listing.coordinates[1] : 0 %>;
+                const address = "<= listing.location %>, <= listing.country %>";
+                const zoom = 14;
+                const draggableMarker = true;
+                const map_apiKey = "<= process.env.MAP_API %>"; //for geocoding APIs
+            </script>
+
+            - create div with id map and hidden input to take coordinate of marker from the map send it with the form data
+                <div class="mb-4">
+                    <label for="coordinates" class="form-label">Select your exact location on map: </label>
+                    <!-- Hidden Input to hold Coordinates -->
+                    <input type="hidden" name="listing[coordinates]" id="coordinates" />
+        
+                    <div id="map"></div>
+                </div>
+
+        - edit map.js
+            - get variables from backend using ejs template
+                const lat = latitude || 28.644800;  // Default latitude (Delhi)
+                const lng = longitude || 77.216721; // Default longitude (Delhi)
+                const locationAddress = address || "Unknown Road";
+                const zoomLevel = zoom;
+                const markerMove = draggableMarker || false;
+                const apiKey = map_apiKey || 'unknownUser';
+                
+            - create map
+                // Initialize the map centered at given coordinates ([Coordinates], zoom level)
+                const map = L.map('map').setView([lat, lng], zoomLevel); 
+
+                // Add Google Street tile layer (needs internet connetion)
+                var googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+                    maxZoom: 20,
+                    attribution: '&copy; Wanderlust',
+                    subdomains:['mt0','mt1','mt2','mt3']
+                });
+                googleStreets.addTo(map);
+
+            - create custom marker
+                // Custom Marker
+                const customIcon = L.icon({
+                    iconUrl: '/icons/marker.png', // Path to your custom icon
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 40],
+                    popupAnchor: [0, -40]
+                });
+                // Add a marker at the provided coordinates
+                const marker = L.marker([lat, lng], { icon: customIcon, draggable: markerMove }).addTo(map);
+                // Marker Popup
+                marker.bindPopup(`<b>${locationAddress}</b>  <br>Drag marker to exact location.`).openPopup();
+                // Function for Draggable Marker -> getting new coordinates from marker position
+                marker.on('dragend', function(e) {
+                    const newLatLng = marker.getLatLng();   // Get the new position of the marker
+                    currentLat = newLatLng.lat;
+                    currentLng = newLatLng.lng;
+                    // console.log(newLatLng.lat, newLatLng.lng);
+                    marker.setPopupContent("Current Postition: " + newLatLng.lat.toFixed(4) + "°N, " + newLatLng.lng.toFixed(4) + "°E" ).openPopup();  // Update the popup content with new position
+                    // marker.setPopupContent( locationAddress ).openPopup();   // Can show present address after forward geocoding
+                });
+
+            - create layer control (https://gis.stackexchange.com/questions/225098/using-google-maps-static-tiles-with-leaflet)
+                googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+                    maxZoom: 20,
+                    subdomains:['mt0','mt1','mt2','mt3']
+                });
+                var openStreetMap = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 20,
+                    attribution: '&copy; Wanderlust'
+                });
+                googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+                    maxZoom: 20,
+                    subdomains:['mt0','mt1','mt2','mt3']
+                });
+                // googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+                //     maxZoom: 20,
+                //     subdomains:['mt0','mt1','mt2','mt3']
+                // });
+                // googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+                //     maxZoom: 20,
+                //     subdomains:['mt0','mt1','mt2','mt3']
+                // });
+                var baseLayers = {
+                    "Google Street": googleStreets,
+                    "Google Hybrid": googleHybrid,
+                    "OpenStreetMap": openStreetMap,
+                    // "Google Satelite": googleSat,
+                    // "Google Terrain": googleTerrain,
+                };
+                var overlays = {
+                    "Default Marker": marker,
+                    // "Custom Marker": marker2
+                };
+                L.control.layers(baseLayers, overlays, {collapsed: true}).addTo(map);
+
+        - create onClick function to fetchCurrentLocation of marker 
+            - edit map.js
+                function fetchCurrentPosition(event) {
+                    event.preventDefault();     // Prevents form from submitting immediately
+                    // Assuming currentLat and currentLng are set when the marker is moved
+                    console.log("Current Position: " + currentLat.toFixed(4) + " And " + currentLng.toFixed(4));
+                    // Set the coordinates as a geometry object (latitude and longitude) for backend use -> geometry: { "lat": 40.7128, "lng": -74.0060 }
+                    const geometryInput = document.getElementById('coordinates');
+                    geometryInput.value = JSON.stringify({ lat: currentLat, lng: currentLng });     //Convert Object to Sting before Sending to backend, At backend we will parse it to Object
+                    // console.log("Geometry object to submit:", geometryInput.value);
+                    // Submit the form
+                    document.querySelector('form').submit();
+                }
+
+                // // Getting the current Position of the Marker, directly sending it as String of Array not Object
+                // function fetchCurrentPosition(event) {
+                //     event.preventDefault(); // Prevents form from submitting immediately
+
+                //     // Assuming currentLat and currentLng are set when the marker is moved
+                //     console.log("Current Position: " + currentLat.toFixed(4) + " And " + currentLng.toFixed(4));
+
+                //     // Set the coordinates in the hidden input field
+                //     const coordinatesInput = document.getElementById('coordinates');
+                //     coordinatesInput.value = JSON.stringify([currentLat, currentLng]); // Make sure it’s an array
+
+
+                //     // // Log the form data to verify before submitting
+                //     // const formData = new FormData(document.querySelector('form'));
+                //     // formData.forEach((value, key) => {
+                //     //     console.log(key, value);  // This will log each key-value pair in the form data
+                //     // });
+                //     console.log("Coordinates to submit:", coordinatesInput.value); // Logs the JSON string
+
+
+                //     // Submit the form
+                //     document.querySelector('form').submit();
+                // }
+
+        - edit .ejs template 
+            <br><br>
+            <!-- onClick function is defined in map.js for sending current location of marker with Listing data -->
+            <button class="btn btn-dark add-btn" onclick="fetchCurrentPosition(event)">Add</button>
+
+    - edit checkListing via validateListing of Schema.js
+       // we are getting coordinates as string in form-data -> parsing it at listing.js(controllers) as array before saving it to database
+        coordinates: Joi.string().required(),
+
+    - edit listings.js of controllers folder -> for edit Listing and new Listing with coordinates
+
+        module.exports.addListing = async(req, res, next) => {
+            const newListing = new Listing(req.body.listing);
+            
+            // coordinates = JSON.parse(req.body.listing.coordinates);     // Convert string '[28,75]' into an array [28, 75]
+            // console.log("Coordinates (after parsing):", coordinates);
+
+            // Parse coordinates as an object with lat and lng properties
+            const coordinates = JSON.parse(req.body.listing.coordinates); // Should be { lat: ..., lng: ... }
+            console.log("Coordinates (after parsing):", coordinates);
+
+            newListing.owner = req.user._id;        //current user is the owner of this new listing
+            newListing.image = {url, filename};     // save the url and filename in mongoDB from Cloudinary
+            newListing.coordinates = [coordinates.lat, coordinates.lng];;
+
+            await newListing.save();
+
+            console.log("New Listing Added Successfully...");
+            req.flash("success", "New listing Added Successfully !");
+            res.redirect("/listings");
+        };
+
+
+        module.exports.updateListing = async(req, res, next) => {
+            let { id } = req.params;
+            let updateListing = { ...req.body.listing};
+        
+
+            // Convert coordinates from String to Number
+            // coordinates = JSON.parse(req.body.listing.coordinates);     // Convert string '[28,75]' into an array [28, 75]
+            // console.log("Coordinates (after parsing):", coordinates);
+            // updateListing.coordinates = coordinates;
+
+            // Parse the coordinates JSON string into an object with lat and lng
+            const coordinates = JSON.parse(req.body.listing.coordinates);
+            // Check that lat and lng are numbers, then assign to the updateListing object
+            if (typeof coordinates.lat === 'number' && typeof coordinates.lng === 'number') {
+                updateListing.coordinates = [coordinates.lat, coordinates.lng]; // Convert to an array format expected by Mongoose
+            } else {
+                console.error("Invalid coordinate format");
+                return res.status(400).send("Invalid coordinate format");
+            }
+
+            let listing = await Listing.findByIdAndUpdate(id, updateListing); 
+
+            // If we get the file in edit form then only we are going to extract url and filename from the form
+            if (typeof req.file !== "undefined") {
+                let url = req.file.path;
+                let filename = req.file.filename;
+                listing.image = {url, filename};
+
+                await listing.save();
+            }
+
+            req.flash("success", "Listing Updated !");
+            res.redirect(`/listings/${id}`);
+            console.log("Listing Edited and Updated Successfully...");
+        };
+
+
+#### For Geocoding APIs (We didn't used it in our current project -> skip this step) -> map.js
+    - Get mapAccessToken from the backend (Secured)
+        const apiKey = map_apiKey || 'unknownUser'; //Passing it from backend (.env) using .ejs template and using it here
+        
+    - Forward Geocoding (Coordinates -> Address)
+        async function getPlaceName(latitude, longitude) {
+
+            const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
+
+            try {
+                const response = await axios.get(url);
+                // console.log("Reverse Geocoding Response:", response.data);
+
+                return response.data.results[0].formatted || "Unknown Location";
+            } catch (error) {
+                console.error("Error fetching place name:", error.message || error);
+                return "Unknown Location";
+            }
+        };
+
+    - Reverse GeoCoding (Address -> Coordinates)
+        async function getCoordinates(address) {
+            const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}`;
+            try {
+                const response = await axios.get(url);
+                // console.log("Forward Geocoding Response:", response.data); // Log full response data
+
+                if (response.data.results && response.data.results.length > 0) {
+                    const { lat, lng } = response.data.results[0].geometry;
+                    return { latitude: parseFloat(lat), longitude: parseFloat(lng) };
+                } else {
+                    console.error("Address not found in response.");
+                    return null;
+                }
+            } catch (error) {
+                console.error("Error fetching coordinates:", error.message || error);
+                return null;
+            }
+        };
+
      -> Can we export function and use same one in the same file ?
 
 
-## UPDATE THIS FILE FOR MAP Docs (String to Array)
-## CONVERT two map.js to single one
+## NOTE: IMPORTANT CHANGES 
+    - Update init data with their coordinates (Geocoding or through map)
+        - edit index.js of init folder
+            // Assign the same coordinates [20, 40] and a fixed owner ID to all listings
+            initData.data = initData.data.map((obj) => ({
+                ...obj,
+                owner: "6735ab649714e6944be13201",      // ID of the owner, create a user first in the database
+                coordinates: [33.2778, 75.3412],        // Assign fixed coordinates to all previous listings 
+            }));
+
+    - Coordinates -> Object -> String -> Backend -> String -> Object -> Array -> Database (Flow of Coordinates from form to database)
+
+    - Update icons folder with image imageLoader
+        - use it whenever our listingImage deleted from the cloud or not getting response from cloudinary
+        - edit .ejs templates
+            <a id="listing-link" href="<= listing.image.url %>" target="_blank">
+                <img 
+                    src="<= listing.image.url %>" 
+                    class="card-img-top show-img" 
+                    alt="listing_img"
+                    onerror="this.onerror=null; this.src='/icons/imageLoader.png'; document.getElementById('listing-link').href='/icons/imageLoader.png';"
+                >
+            </a>

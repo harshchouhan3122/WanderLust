@@ -17,7 +17,7 @@
             <a href="/listings/<%=listing.id%>" class="listing-link" >
                 <div class="card col listing-card" >
 
-                    <img src="<%=listing.image.url%>" class="card-img-top" alt="listing_img" style="height: 20rem;">
+                    <img src="<%=listing.image.url%>" class="card-img-top" alt="listing_img" style="height: 20rem;" onerror="this.onerror=null; this.src='/icons/imageLoader.png';">
                     <div class="card-img-overlay">  </div>
 
                     <div class="card-body">
@@ -34,14 +34,6 @@
         <% } %>
         
     </div>
-
-
-
-    <!-- <ul>
-        <for (let listing of allListings) { %>
-            <li> <a href="/listings/<=listing.id%>"> <= listing.title %> </a> </li>
-        < } %>
-    </ul> -->
 
 </body>
 
