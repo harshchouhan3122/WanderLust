@@ -2040,18 +2040,29 @@
                 L.control.layers(baseLayers, overlays, {collapsed: true}).addTo(map);
 
         - create onClick function to fetchCurrentLocation of marker 
+            - edit new.ejs and edit.ejs -> add id="ListingForm" to form tag
             - edit map.js
                 function fetchCurrentPosition(event) {
-                    event.preventDefault();     // Prevents form from submitting immediately
+                    event.preventDefault(); // Prevent default form submission
+
                     // Assuming currentLat and currentLng are set when the marker is moved
                     console.log("Current Position: " + currentLat.toFixed(4) + " And " + currentLng.toFixed(4));
+
                     // Set the coordinates as a geometry object (latitude and longitude) for backend use -> geometry: { "lat": 40.7128, "lng": -74.0060 }
                     const geometryInput = document.getElementById('coordinates');
                     geometryInput.value = JSON.stringify({ lat: currentLat, lng: currentLng });     //Convert Object to Sting before Sending to backend, At backend we will parse it to Object
                     // console.log("Geometry object to submit:", geometryInput.value);
-                    // Submit the form
-                    document.querySelector('form').submit();
+
+                    // Select the correct form by ID
+                    const form = document.getElementById('ListingForm');
+                    if (!form) {
+                        console.error("Add Listing form not found!");
+                        return;
+                    }
+        
+                    form.submit(); // Submit the intended form
                 }
+
 
                 // // Getting the current Position of the Marker, directly sending it as String of Array not Object
                 // function fetchCurrentPosition(event) {
